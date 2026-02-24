@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Phone, Mail, ArrowRight, Clock, Check } from "lucide-react";
+import { Phone, Mail, Clock, Check } from "lucide-react";
 import { openWhatsApp } from "@/lib/whatsapp";
 import { gsap } from "@/lib/gsap-config";
 import { useGSAP } from "@gsap/react";
@@ -18,18 +18,6 @@ interface ContactSectionProps {
   } | null;
 }
 
-// CSS-only floating gold sphere decoration
-function FloatingGoldSphere() {
-  return (
-    <div className="relative w-full h-full">
-      {/* Main sphere with gradient */}
-      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gold-400 via-gold-500 to-gold-600 animate-[gentle-float_6s_ease-in-out_infinite] shadow-[0_0_40px_rgba(201,162,39,0.4)]" />
-      {/* Highlight */}
-      <div className="absolute top-2 left-2 w-1/3 h-1/3 rounded-full bg-white/30 blur-sm" />
-    </div>
-  );
-}
-
 const defaultContactInfo = {
   phone: "+91 90100 91191",
   email: "manikanta@thepreciousinteriors.com",
@@ -40,421 +28,36 @@ const defaultContactInfo = {
   ],
 };
 
-// Form Input with Gold Underline Animation
-function AnimatedInput({
-  type,
-  id,
-  name,
-  required,
-  value,
-  onChange,
-  placeholder,
-  label,
-  index,
-}: {
-  type: string;
-  id: string;
-  name: string;
-  required?: boolean;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholder: string;
-  label: string;
-  index: number;
-}) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const underlineRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+const serviceOptions = [
+  { value: "", label: "Select service type" },
+  { value: "full-home-interior", label: "Full Home Interior" },
+  { value: "modular-kitchen", label: "Modular Kitchen" },
+  { value: "wardrobe", label: "Wardrobe" },
+  { value: "living-room", label: "Living Room" },
+  { value: "bedroom", label: "Bedroom" },
+  { value: "bathroom", label: "Bathroom" },
+  { value: "office-interior", label: "Office Interior" },
+  { value: "other", label: "Other" },
+];
 
-  // Staggered entrance animation
-  useGSAP(() => {
-    if (!containerRef.current) return;
-
-    gsap.fromTo(
-      containerRef.current,
-      {
-        opacity: 0,
-        x: -30,
-      },
-      {
-        opacity: 1,
-        x: 0,
-        duration: 0.6,
-        delay: 0.2 + index * 0.1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 90%",
-          toggleActions: "play none none none",
-        },
-      }
-    );
-  }, [index]);
-
-  const handleFocus = () => {
-    if (underlineRef.current) {
-      gsap.to(underlineRef.current, {
-        scaleX: 1,
-        duration: 0.4,
-        ease: "power2.out",
-      });
-    }
-  };
-
-  const handleBlur = () => {
-    if (underlineRef.current && !value) {
-      gsap.to(underlineRef.current, {
-        scaleX: 0,
-        duration: 0.3,
-        ease: "power2.in",
-      });
-    }
-  };
-
-  return (
-    <div ref={containerRef}>
-      <label
-        htmlFor={id}
-        className="block text-xs font-semibold tracking-[0.1em] uppercase text-neutral-700 mb-2"
-      >
-        {label} {required && "*"}
-      </label>
-      <div className="relative">
-        <input
-          ref={inputRef}
-          type={type}
-          id={id}
-          name={name}
-          required={required}
-          value={value}
-          onChange={onChange}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          placeholder={placeholder}
-          className={cn(
-            "w-full px-4 py-3 bg-neutral-50 text-neutral-900",
-            "border-2 border-neutral-200",
-            "focus:outline-none focus:border-neutral-300",
-            "transition-colors duration-300",
-            "placeholder:text-neutral-400"
-          )}
-        />
-        {/* Gold underline animation */}
-        <div
-          ref={underlineRef}
-          className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-gold-400 to-gold-600 origin-left"
-          style={{ transform: "scaleX(0)" }}
-        />
-      </div>
-    </div>
-  );
-}
-
-// Animated Textarea with Gold Underline
-function AnimatedTextarea({
-  id,
-  name,
-  required,
-  rows,
-  value,
-  onChange,
-  placeholder,
-  label,
-  index,
-}: {
-  id: string;
-  name: string;
-  required?: boolean;
-  rows: number;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  placeholder: string;
-  label: string;
-  index: number;
-}) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const underlineRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useGSAP(() => {
-    if (!containerRef.current) return;
-
-    gsap.fromTo(
-      containerRef.current,
-      {
-        opacity: 0,
-        x: -30,
-      },
-      {
-        opacity: 1,
-        x: 0,
-        duration: 0.6,
-        delay: 0.2 + index * 0.1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 90%",
-          toggleActions: "play none none none",
-        },
-      }
-    );
-  }, [index]);
-
-  const handleFocus = () => {
-    if (underlineRef.current) {
-      gsap.to(underlineRef.current, {
-        scaleX: 1,
-        duration: 0.4,
-        ease: "power2.out",
-      });
-    }
-  };
-
-  const handleBlur = () => {
-    if (underlineRef.current && !value) {
-      gsap.to(underlineRef.current, {
-        scaleX: 0,
-        duration: 0.3,
-        ease: "power2.in",
-      });
-    }
-  };
-
-  return (
-    <div ref={containerRef}>
-      <label
-        htmlFor={id}
-        className="block text-xs font-semibold tracking-[0.1em] uppercase text-neutral-700 mb-2"
-      >
-        {label} {required && "*"}
-      </label>
-      <div className="relative">
-        <textarea
-          ref={textareaRef}
-          id={id}
-          name={name}
-          required={required}
-          rows={rows}
-          value={value}
-          onChange={onChange}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          placeholder={placeholder}
-          className={cn(
-            "w-full px-4 py-3 bg-neutral-50 resize-none text-neutral-900",
-            "border-2 border-neutral-200",
-            "focus:outline-none focus:border-neutral-300",
-            "transition-colors duration-300",
-            "placeholder:text-neutral-400"
-          )}
-        />
-        <div
-          ref={underlineRef}
-          className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-gold-400 to-gold-600 origin-left"
-          style={{ transform: "scaleX(0)" }}
-        />
-      </div>
-    </div>
-  );
-}
-
-// Animated Select with Gold Underline
-function AnimatedSelect({
-  id,
-  name,
-  value,
-  onChange,
-  label,
-  index,
-  options,
-}: {
-  id: string;
-  name: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  label: string;
-  index: number;
-  options: { value: string; label: string }[];
-}) {
-  const selectRef = useRef<HTMLSelectElement>(null);
-  const underlineRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useGSAP(() => {
-    if (!containerRef.current) return;
-
-    gsap.fromTo(
-      containerRef.current,
-      {
-        opacity: 0,
-        x: -30,
-      },
-      {
-        opacity: 1,
-        x: 0,
-        duration: 0.6,
-        delay: 0.2 + index * 0.1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 90%",
-          toggleActions: "play none none none",
-        },
-      }
-    );
-  }, [index]);
-
-  const handleFocus = () => {
-    if (underlineRef.current) {
-      gsap.to(underlineRef.current, {
-        scaleX: 1,
-        duration: 0.4,
-        ease: "power2.out",
-      });
-    }
-  };
-
-  const handleBlur = () => {
-    if (underlineRef.current && !value) {
-      gsap.to(underlineRef.current, {
-        scaleX: 0,
-        duration: 0.3,
-        ease: "power2.in",
-      });
-    }
-  };
-
-  return (
-    <div ref={containerRef}>
-      <label
-        htmlFor={id}
-        className="block text-xs font-semibold tracking-[0.1em] uppercase text-neutral-700 mb-2"
-      >
-        {label}
-      </label>
-      <div className="relative">
-        <select
-          ref={selectRef}
-          id={id}
-          name={name}
-          value={value}
-          onChange={onChange}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          className={cn(
-            "w-full px-4 py-3 bg-neutral-50",
-            "border-2 border-neutral-200",
-            "focus:outline-none focus:border-neutral-300",
-            "transition-colors duration-300",
-            "text-neutral-900"
-          )}
-        >
-          {options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-        <div
-          ref={underlineRef}
-          className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-gold-400 to-gold-600 origin-left"
-          style={{ transform: "scaleX(0)" }}
-        />
-      </div>
-    </div>
-  );
-}
-
-// Submit Button with Success Animation
-function SubmitButton({
-  isSubmitting,
-  isSuccess,
-}: {
-  isSubmitting: boolean;
-  isSuccess: boolean;
-}) {
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const successRef = useRef<HTMLDivElement>(null);
-
-  useGSAP(() => {
-    if (isSuccess && buttonRef.current && successRef.current) {
-      // Success animation
-      const tl = gsap.timeline();
-
-      tl.to(buttonRef.current, {
-        backgroundColor: "#22c55e",
-        duration: 0.3,
-      })
-        .to(
-          successRef.current,
-          {
-            scale: 1,
-            opacity: 1,
-            duration: 0.4,
-            ease: "back.out(1.7)",
-          },
-          "-=0.1"
-        )
-        .to(buttonRef.current, {
-          boxShadow: "0 0 30px rgba(34, 197, 94, 0.5)",
-          duration: 0.2,
-          yoyo: true,
-          repeat: 1,
-        });
-    }
-  }, [isSuccess]);
-
-  return (
-    <motion.button
-      ref={buttonRef}
-      type="submit"
-      disabled={isSubmitting || isSuccess}
-      className={cn(
-        "w-full flex items-center justify-center gap-3 relative overflow-hidden",
-        "px-8 py-5 bg-primary-600 text-white",
-        "font-semibold text-sm tracking-[0.1em] uppercase",
-        "hover:bg-gold-500 hover:text-neutral-900",
-        "transition-all duration-300",
-        "disabled:cursor-not-allowed"
-      )}
-      whileHover={{ scale: isSubmitting || isSuccess ? 1 : 1.01 }}
-      whileTap={{ scale: isSubmitting || isSuccess ? 1 : 0.99 }}
-    >
-      {isSuccess ? (
-        <>
-          <div
-            ref={successRef}
-            className="absolute inset-0 flex items-center justify-center"
-            style={{ opacity: 0, transform: "scale(0)" }}
-          >
-            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-              <Check className="w-5 h-5 text-green-500" strokeWidth={3} />
-            </div>
-          </div>
-          <span className="opacity-0">Sent Successfully!</span>
-        </>
-      ) : isSubmitting ? (
-        <span className="flex items-center gap-2">
-          <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-          Sending...
-        </span>
-      ) : (
-        <>
-          <span>Submit Inquiry</span>
-          <ArrowRight className="w-4 h-4" />
-        </>
-      )}
-    </motion.button>
-  );
-}
+const budgetOptions = [
+  { value: "", label: "Select budget range" },
+  { value: "under-5-lakh", label: "Under 5 Lakh" },
+  { value: "5-10-lakh", label: "5 - 10 Lakh" },
+  { value: "10-15-lakh", label: "10 - 15 Lakh" },
+  { value: "15-25-lakh", label: "15 - 25 Lakh" },
+  { value: "25-50-lakh", label: "25 - 50 Lakh" },
+  { value: "above-50-lakh", label: "Above 50 Lakh" },
+];
 
 export function ContactSection({ contactInfo: propsContactInfo }: ContactSectionProps) {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    projectType: "",
-    message: "",
+    mobile: "",
+    serviceType: "",
+    spaceSize: "",
+    budgetRange: "",
+    pincode: "",
+    confirmDetails: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -509,17 +112,23 @@ export function ContactSection({ contactInfo: propsContactInfo }: ContactSection
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!formData.confirmDetails) {
+      return;
+    }
+
     setIsSubmitting(true);
 
-    const whatsappMessage = `*New Inquiry from Website*
+    const serviceLabel = serviceOptions.find(o => o.value === formData.serviceType)?.label || formData.serviceType;
+    const budgetLabel = budgetOptions.find(o => o.value === formData.budgetRange)?.label || formData.budgetRange;
 
-*Name:* ${formData.name}
-*Email:* ${formData.email}
-*Phone:* ${formData.phone || "Not provided"}
-*Project Type:* ${formData.projectType || "Not specified"}
+    const whatsappMessage = `*Request a Quote - Precious Interiors*
 
-*Message:*
-${formData.message}`;
+*Mobile:* ${formData.mobile}
+*Service Type:* ${serviceLabel}
+*Space Size:* ${formData.spaceSize} sq.ft
+*Budget Range:* ${budgetLabel}
+*Pincode:* ${formData.pincode}`;
 
     await new Promise((resolve) => setTimeout(resolve, 800));
 
@@ -530,14 +139,27 @@ ${formData.message}`;
     setTimeout(() => {
       openWhatsApp(whatsappMessage);
       setIsSuccess(false);
-      setFormData({ name: "", email: "", phone: "", projectType: "", message: "" });
+      setFormData({
+        mobile: "",
+        serviceType: "",
+        spaceSize: "",
+        budgetRange: "",
+        pincode: "",
+        confirmDetails: false,
+      });
     }, 1500);
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type } = e.target;
+    if (type === "checkbox") {
+      const checked = (e.target as HTMLInputElement).checked;
+      setFormData((prev) => ({ ...prev, [name]: checked }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   return (
@@ -545,11 +167,6 @@ ${formData.message}`;
       {/* Background Elements */}
       <div className="absolute top-0 left-0 w-1/3 h-full bg-gradient-to-r from-primary-600/20 to-transparent" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-gold-500/5 rounded-full blur-3xl" />
-
-      {/* Floating Gold Sphere - CSS only */}
-      <div className="absolute bottom-20 left-10 w-24 h-24 pointer-events-none opacity-50 hidden lg:block">
-        <FloatingGoldSphere />
-      </div>
 
       <div className="container mx-auto px-6 lg:px-12 relative">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
@@ -575,9 +192,9 @@ ${formData.message}`;
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-4xl md:text-5xl lg:text-6xl font-cinzel font-semibold text-white leading-[1.1] mb-6"
             >
-              Let&apos;s Create
+              Request a
               <br />
-              <span className="text-gold-400">Together</span>
+              <span className="text-gold-400">Quote</span>
             </motion.h2>
 
             <motion.p
@@ -587,7 +204,7 @@ ${formData.message}`;
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-neutral-400 text-lg leading-relaxed mb-12"
             >
-              Ready to transform your space into something extraordinary? We&apos;d
+              Get your free estimate from Precious Interiors. We&apos;d
               love to hear about your vision and discuss how we can bring it to life.
             </motion.p>
 
@@ -650,81 +267,223 @@ ${formData.message}`;
           <div ref={formRef}>
             <div className="bg-white p-8 md:p-10 lg:p-12 shadow-2xl">
               <h3 className="text-2xl md:text-3xl font-cinzel font-semibold text-neutral-900 mb-2">
-                Start Your Project
+                Get Free Estimate
               </h3>
               <p className="text-neutral-500 mb-8">
                 Fill out the form below and we&apos;ll get back to you within 24 hours.
               </p>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <AnimatedInput
-                    type="text"
-                    id="name"
-                    name="name"
-                    required
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="John Smith"
-                    label="Full Name"
-                    index={0}
-                  />
-
-                  <AnimatedInput
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="john@example.com"
-                    label="Email Address"
-                    index={1}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <AnimatedInput
+              <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Mobile */}
+                <div>
+                  <label
+                    htmlFor="contact-mobile"
+                    className="block text-sm font-medium text-neutral-700 mb-2"
+                  >
+                    Mobile
+                  </label>
+                  <input
                     type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
+                    id="contact-mobile"
+                    name="mobile"
+                    value={formData.mobile}
                     onChange={handleChange}
-                    placeholder="+1 (555) 000-0000"
-                    label="Phone Number"
-                    index={2}
-                  />
-
-                  <AnimatedSelect
-                    id="projectType"
-                    name="projectType"
-                    value={formData.projectType}
-                    onChange={handleChange}
-                    label="Project Type"
-                    index={3}
-                    options={[
-                      { value: "", label: "Select a type" },
-                      { value: "residential", label: "Residential" },
-                      { value: "commercial", label: "Commercial" },
-                      { value: "hospitality", label: "Hospitality" },
-                      { value: "other", label: "Other" },
-                    ]}
+                    required
+                    placeholder="Enter your mobile number"
+                    className={cn(
+                      "w-full px-4 py-3",
+                      "bg-white border border-neutral-300 rounded-md",
+                      "text-neutral-900 placeholder:text-neutral-400",
+                      "focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500",
+                      "transition-colors duration-200"
+                    )}
                   />
                 </div>
 
-                <AnimatedTextarea
-                  id="message"
-                  name="message"
-                  required
-                  rows={4}
-                  value={formData.message}
-                  onChange={handleChange}
-                  placeholder="Describe your vision, space, and any specific requirements..."
-                  label="Tell Us About Your Project"
-                  index={4}
-                />
+                {/* Service Type */}
+                <div>
+                  <label
+                    htmlFor="contact-serviceType"
+                    className="block text-sm font-medium text-neutral-700 mb-2"
+                  >
+                    I want to
+                  </label>
+                  <select
+                    id="contact-serviceType"
+                    name="serviceType"
+                    value={formData.serviceType}
+                    onChange={handleChange}
+                    required
+                    className={cn(
+                      "w-full px-4 py-3",
+                      "bg-white border border-neutral-300 rounded-md",
+                      "text-neutral-900",
+                      "focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500",
+                      "transition-colors duration-200",
+                      "appearance-none cursor-pointer",
+                      "bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23666%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')]",
+                      "bg-[length:1.25rem] bg-[right_0.75rem_center] bg-no-repeat"
+                    )}
+                  >
+                    {serviceOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-                <SubmitButton isSubmitting={isSubmitting} isSuccess={isSuccess} />
+                {/* Space Size */}
+                <div>
+                  <label
+                    htmlFor="contact-spaceSize"
+                    className="block text-sm font-medium text-neutral-700 mb-2"
+                  >
+                    Space Size (sq.ft)
+                  </label>
+                  <input
+                    type="text"
+                    id="contact-spaceSize"
+                    name="spaceSize"
+                    value={formData.spaceSize}
+                    onChange={handleChange}
+                    required
+                    placeholder="Enter space size in sq.ft"
+                    className={cn(
+                      "w-full px-4 py-3",
+                      "bg-white border border-neutral-300 rounded-md",
+                      "text-neutral-900 placeholder:text-neutral-400",
+                      "focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500",
+                      "transition-colors duration-200"
+                    )}
+                  />
+                </div>
+
+                {/* Budget Range */}
+                <div>
+                  <label
+                    htmlFor="contact-budgetRange"
+                    className="block text-sm font-medium text-neutral-700 mb-2"
+                  >
+                    Budget Range
+                  </label>
+                  <select
+                    id="contact-budgetRange"
+                    name="budgetRange"
+                    value={formData.budgetRange}
+                    onChange={handleChange}
+                    required
+                    className={cn(
+                      "w-full px-4 py-3",
+                      "bg-white border border-neutral-300 rounded-md",
+                      "text-neutral-900",
+                      "focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500",
+                      "transition-colors duration-200",
+                      "appearance-none cursor-pointer",
+                      "bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23666%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')]",
+                      "bg-[length:1.25rem] bg-[right_0.75rem_center] bg-no-repeat"
+                    )}
+                  >
+                    {budgetOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Pincode */}
+                <div>
+                  <label
+                    htmlFor="contact-pincode"
+                    className="block text-sm font-medium text-neutral-700 mb-2"
+                  >
+                    Pincode
+                  </label>
+                  <input
+                    type="text"
+                    id="contact-pincode"
+                    name="pincode"
+                    value={formData.pincode}
+                    onChange={handleChange}
+                    required
+                    placeholder="Enter your pincode"
+                    className={cn(
+                      "w-full px-4 py-3",
+                      "bg-white border border-neutral-300 rounded-md",
+                      "text-neutral-900 placeholder:text-neutral-400",
+                      "focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500",
+                      "transition-colors duration-200"
+                    )}
+                  />
+                </div>
+
+                {/* Confirm Details Checkbox */}
+                <div className="flex items-start gap-3 pt-2">
+                  <div className="relative flex items-center">
+                    <input
+                      type="checkbox"
+                      id="contact-confirmDetails"
+                      name="confirmDetails"
+                      checked={formData.confirmDetails}
+                      onChange={handleChange}
+                      required
+                      className="peer sr-only"
+                    />
+                    <div
+                      className={cn(
+                        "w-5 h-5 border-2 border-neutral-300 rounded",
+                        formData.confirmDetails && "bg-primary-500 border-primary-500",
+                        "transition-colors duration-200 cursor-pointer",
+                        "flex items-center justify-center"
+                      )}
+                      onClick={() => setFormData(prev => ({ ...prev, confirmDetails: !prev.confirmDetails }))}
+                    >
+                      {formData.confirmDetails && (
+                        <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                      )}
+                    </div>
+                  </div>
+                  <label
+                    htmlFor="contact-confirmDetails"
+                    className="text-sm text-neutral-600 cursor-pointer select-none"
+                    onClick={() => setFormData(prev => ({ ...prev, confirmDetails: !prev.confirmDetails }))}
+                  >
+                    <span className="font-medium text-neutral-800">Confirm your details</span>
+                    <br />
+                    <span className="text-neutral-500">Yes, every detail are correct</span>
+                  </label>
+                </div>
+
+                {/* Submit button */}
+                <button
+                  type="submit"
+                  disabled={isSubmitting || isSuccess || !formData.confirmDetails}
+                  className={cn(
+                    "w-full py-4 mt-4",
+                    isSuccess ? "bg-green-500" : "bg-[#F5A623]",
+                    "text-white",
+                    "font-semibold text-sm tracking-wide uppercase",
+                    "hover:bg-[#E09515] transition-colors duration-200",
+                    "disabled:cursor-not-allowed",
+                    !formData.confirmDetails && !isSubmitting && !isSuccess && "opacity-70",
+                    "rounded-md"
+                  )}
+                >
+                  {isSuccess ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Check className="w-5 h-5" />
+                      Sent Successfully!
+                    </span>
+                  ) : isSubmitting ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Sending...
+                    </span>
+                  ) : (
+                    "GET FREE ESTIMATE"
+                  )}
+                </button>
               </form>
             </div>
           </div>

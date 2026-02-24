@@ -11,7 +11,8 @@ interface ImageUploadProps {
 }
 
 export function ImageUpload({ name, value, onChange }: ImageUploadProps) {
-  const [preview, setPreview] = useState<string>(value || '')
+  const [preview, setPreview] = useState<string>(value || '') // Visual preview (can be base64 or URL)
+  const [uploadedUrl, setUploadedUrl] = useState<string>(value || '') // Actual form value (always a URL)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showUrlInput, setShowUrlInput] = useState(false)
@@ -25,7 +26,7 @@ export function ImageUpload({ name, value, onChange }: ImageUploadProps) {
     setError(null)
     setUploading(true)
 
-    // Show preview immediately
+    // Show local preview (for display only, not form value)
     const reader = new FileReader()
     reader.onloadend = () => {
       setPreview(reader.result as string)
@@ -48,6 +49,7 @@ export function ImageUpload({ name, value, onChange }: ImageUploadProps) {
 
     if (result.url) {
       setPreview(result.url)
+      setUploadedUrl(result.url) // Only set form value after successful upload
       onChange?.(result.url)
     }
   }
@@ -55,6 +57,7 @@ export function ImageUpload({ name, value, onChange }: ImageUploadProps) {
   const handleUrlSubmit = () => {
     if (urlInput.trim()) {
       setPreview(urlInput.trim())
+      setUploadedUrl(urlInput.trim())
       onChange?.(urlInput.trim())
       setShowUrlInput(false)
       setUrlInput('')
@@ -63,6 +66,7 @@ export function ImageUpload({ name, value, onChange }: ImageUploadProps) {
 
   const handleRemove = () => {
     setPreview('')
+    setUploadedUrl('')
     onChange?.('')
     if (inputRef.current) {
       inputRef.current.value = ''
@@ -71,7 +75,8 @@ export function ImageUpload({ name, value, onChange }: ImageUploadProps) {
 
   return (
     <div className="space-y-2">
-      <input type="hidden" name={name} value={preview} />
+      {/* Only submit the uploaded URL, never base64 data */}
+      <input type="hidden" name={name} value={uploadedUrl} />
 
       {preview ? (
         <div className="relative inline-block">

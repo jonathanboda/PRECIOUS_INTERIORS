@@ -436,25 +436,26 @@ export function ServicesSection({ services: propsServices }: ServicesSectionProp
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.5, ease: premiumEasing }}
-                        className="relative z-30"
+                        className="relative z-50"
                       >
                         <Link
                           href="/services"
-                          className="relative inline-flex items-center gap-3 w-fit px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold tracking-wide uppercase text-sm rounded-none shadow-[0_8px_24px_rgba(26,58,47,0.4)] hover:shadow-[0_12px_32px_rgba(201,162,39,0.3)] hover:scale-105 transition-all duration-300 group/btn overflow-hidden cursor-pointer"
+                          className="relative inline-flex items-center gap-3 w-fit px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold tracking-wide uppercase text-sm rounded-none shadow-[0_8px_24px_rgba(26,58,47,0.4)] hover:shadow-[0_12px_32px_rgba(201,162,39,0.3)] hover:scale-105 transition-all duration-300 group/btn overflow-hidden"
+                          style={{ pointerEvents: 'auto' }}
                         >
                           {/* Gold border accent */}
                           <span className="absolute inset-0 border border-gold-500/30 group-hover/btn:border-gold-500/60 transition-colors pointer-events-none" />
                           {/* Shine effect */}
                           <span className="absolute inset-0 bg-gradient-to-r from-transparent via-gold-500/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none" />
-                          <span className="relative">Explore Service</span>
-                          <ArrowRight className="relative w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                          <span className="relative pointer-events-none">Explore Service</span>
+                          <ArrowRight className="relative w-4 h-4 group-hover/btn:translate-x-1 transition-transform pointer-events-none" />
                         </Link>
                       </motion.div>
                     </div>
 
                     {/* Decorative Glow Elements */}
-                    <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary-500/20 rounded-full blur-3xl z-0" />
-                    <div className="absolute top-1/4 right-1/4 w-32 h-32 bg-gold-500/10 rounded-full blur-2xl z-0" />
+                    <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary-500/20 rounded-full blur-3xl z-0 pointer-events-none" />
+                    <div className="absolute top-1/4 right-1/4 w-32 h-32 bg-gold-500/10 rounded-full blur-2xl z-0 pointer-events-none" />
                   </div>
                 </TiltCard>
               </motion.div>

@@ -1,10 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import { useActionState } from 'react'
 import { createTestimonial, updateTestimonial } from '@/lib/actions/testimonials'
 import { Button } from '@/components/ui/button'
-import { ImageUpload } from '@/components/admin/image-upload'
 
 interface Testimonial {
   id: string
@@ -19,8 +17,6 @@ interface Testimonial {
 }
 
 export function TestimonialForm({ testimonial }: { testimonial?: Testimonial }) {
-  const [imageUrl, setImageUrl] = useState(testimonial?.image_url || '')
-  const [projectImageUrl, setProjectImageUrl] = useState(testimonial?.project_image_url || '')
   const [state, formAction, isPending] = useActionState(
     async (_prevState: { error?: string } | null, formData: FormData) => {
       if (testimonial) return await updateTestimonial(testimonial.id, formData)
@@ -53,16 +49,10 @@ export function TestimonialForm({ testimonial }: { testimonial?: Testimonial }) 
         <textarea name="quote" required rows={4} defaultValue={testimonial?.quote} className="w-full px-4 py-2 border border-neutral-300 rounded-md" />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-neutral-700 mb-1">Client Photo *</label>
-          <ImageUpload name="image_url" value={imageUrl} onChange={setImageUrl} />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-neutral-700 mb-1">Project Image</label>
-          <ImageUpload name="project_image_url" value={projectImageUrl} onChange={setProjectImageUrl} />
-          <p className="text-xs text-neutral-500 mt-1">Optional - shown as large image on website</p>
-        </div>
+      <div>
+        <label className="block text-sm font-medium text-neutral-700 mb-1">Client Photo URL *</label>
+        <input name="image_url" type="url" required defaultValue={testimonial?.image_url} placeholder="https://example.com/photo.jpg" className="w-full px-4 py-2 border border-neutral-300 rounded-md" />
+        <p className="text-xs text-neutral-500 mt-1">Paste a direct URL to the client photo</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4">

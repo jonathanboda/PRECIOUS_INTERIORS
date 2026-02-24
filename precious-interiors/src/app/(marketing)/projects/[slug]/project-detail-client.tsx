@@ -78,11 +78,11 @@ export function ProjectDetailClient({ project, relatedProjects }: ProjectDetailC
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
-          className="absolute top-8 left-6 lg:left-12 z-10"
+          className="absolute top-24 lg:top-28 left-6 lg:left-12 z-10"
         >
           <Link
             href="/projects"
-            className="group inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm text-white text-sm font-medium hover:bg-white/20 transition-colors cursor-pointer"
+            className="group inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm text-white text-sm font-medium hover:bg-white/20 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             <span>Back to Projects</span>
