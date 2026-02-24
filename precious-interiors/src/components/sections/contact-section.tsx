@@ -53,12 +53,10 @@ const budgetOptions = [
 export function ContactSection({ contactInfo: propsContactInfo }: ContactSectionProps) {
   const [formData, setFormData] = useState({
     name: "",
-    mobile: "",
     serviceType: "",
     spaceSize: "",
     budgetRange: "",
     address: "",
-    pincode: "",
     confirmDetails: false,
   });
     const sectionRef = useRef<HTMLElement>(null);
@@ -123,12 +121,10 @@ export function ContactSection({ contactInfo: propsContactInfo }: ContactSection
     const whatsappMessage = `*Request a Quote - Precious Interiors*
 
 *Name:* ${formData.name}
-*Mobile:* ${formData.mobile}
 *Service Type:* ${serviceLabel}
 *Space Size:* ${formData.spaceSize} sq.ft
 *Budget Range:* ${budgetLabel}
-*Address:* ${formData.address}
-*Pincode:* ${formData.pincode}`;
+*Address:* ${formData.address}`;
 
     // Open WhatsApp immediately (before any delays to avoid popup blocking)
     openWhatsApp(whatsappMessage);
@@ -136,12 +132,10 @@ export function ContactSection({ contactInfo: propsContactInfo }: ContactSection
     // Reset form
     setFormData({
       name: "",
-      mobile: "",
       serviceType: "",
       spaceSize: "",
       budgetRange: "",
       address: "",
-      pincode: "",
       confirmDetails: false,
     });
   };
@@ -296,32 +290,6 @@ export function ContactSection({ contactInfo: propsContactInfo }: ContactSection
                   />
                 </div>
 
-                {/* Mobile */}
-                <div>
-                  <label
-                    htmlFor="contact-mobile"
-                    className="block text-sm font-medium text-neutral-700 mb-2"
-                  >
-                    Mobile
-                  </label>
-                  <input
-                    type="tel"
-                    id="contact-mobile"
-                    name="mobile"
-                    value={formData.mobile}
-                    onChange={handleChange}
-                    required
-                    placeholder="Enter your mobile number"
-                    className={cn(
-                      "w-full px-4 py-3",
-                      "bg-white border border-neutral-300 rounded-md",
-                      "text-neutral-900 placeholder:text-neutral-400",
-                      "focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500",
-                      "transition-colors duration-200"
-                    )}
-                  />
-                </div>
-
                 {/* Service Type */}
                 <div>
                   <label
@@ -430,32 +398,6 @@ export function ContactSection({ contactInfo: propsContactInfo }: ContactSection
                     onChange={handleChange}
                     required
                     placeholder="Enter your address"
-                    className={cn(
-                      "w-full px-4 py-3",
-                      "bg-white border border-neutral-300 rounded-md",
-                      "text-neutral-900 placeholder:text-neutral-400",
-                      "focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500",
-                      "transition-colors duration-200"
-                    )}
-                  />
-                </div>
-
-                {/* Pincode */}
-                <div>
-                  <label
-                    htmlFor="contact-pincode"
-                    className="block text-sm font-medium text-neutral-700 mb-2"
-                  >
-                    Pincode
-                  </label>
-                  <input
-                    type="text"
-                    id="contact-pincode"
-                    name="pincode"
-                    value={formData.pincode}
-                    onChange={handleChange}
-                    required
-                    placeholder="Enter your pincode"
                     className={cn(
                       "w-full px-4 py-3",
                       "bg-white border border-neutral-300 rounded-md",

@@ -9,12 +9,10 @@ import { openWhatsApp } from "@/lib/whatsapp";
 
 interface FormData {
   name: string;
-  mobile: string;
   serviceType: string;
   spaceSize: string;
   budgetRange: string;
   address: string;
-  pincode: string;
   confirmDetails: boolean;
 }
 
@@ -44,12 +42,10 @@ export function InquiryModal() {
   const { isOpen, closeModal } = useInquiryModal();
   const [formData, setFormData] = useState<FormData>({
     name: "",
-    mobile: "",
     serviceType: "",
     spaceSize: "",
     budgetRange: "",
     address: "",
-    pincode: "",
     confirmDetails: false,
   });
   
@@ -101,12 +97,10 @@ export function InquiryModal() {
     const whatsappMessage = `*Request a Quote - Precious Interiors*
 
 *Name:* ${formData.name}
-*Mobile:* ${formData.mobile}
 *Service Type:* ${serviceLabel}
 *Space Size:* ${formData.spaceSize} sq.ft
 *Budget Range:* ${budgetLabel}
-*Address:* ${formData.address}
-*Pincode:* ${formData.pincode}`;
+*Address:* ${formData.address}`;
 
     // Open WhatsApp immediately (before any delays to avoid popup blocking)
     openWhatsApp(whatsappMessage);
@@ -114,12 +108,10 @@ export function InquiryModal() {
     // Reset form and close modal
     setFormData({
       name: "",
-      mobile: "",
       serviceType: "",
       spaceSize: "",
       budgetRange: "",
       address: "",
-      pincode: "",
       confirmDetails: false,
     });
     closeModal();
@@ -206,32 +198,6 @@ export function InquiryModal() {
                     onChange={handleChange}
                     required
                     placeholder="Enter your name"
-                    className={cn(
-                      "w-full px-4 py-3",
-                      "bg-white border border-neutral-300 rounded-md",
-                      "text-neutral-900 placeholder:text-neutral-400",
-                      "focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500",
-                      "transition-colors duration-200"
-                    )}
-                  />
-                </div>
-
-                {/* Mobile */}
-                <div>
-                  <label
-                    htmlFor="mobile"
-                    className="block text-sm font-medium text-neutral-700 mb-2"
-                  >
-                    Mobile
-                  </label>
-                  <input
-                    type="tel"
-                    id="mobile"
-                    name="mobile"
-                    value={formData.mobile}
-                    onChange={handleChange}
-                    required
-                    placeholder="Enter your mobile number"
                     className={cn(
                       "w-full px-4 py-3",
                       "bg-white border border-neutral-300 rounded-md",
@@ -350,32 +316,6 @@ export function InquiryModal() {
                     onChange={handleChange}
                     required
                     placeholder="Enter your address"
-                    className={cn(
-                      "w-full px-4 py-3",
-                      "bg-white border border-neutral-300 rounded-md",
-                      "text-neutral-900 placeholder:text-neutral-400",
-                      "focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500",
-                      "transition-colors duration-200"
-                    )}
-                  />
-                </div>
-
-                {/* Pincode */}
-                <div>
-                  <label
-                    htmlFor="pincode"
-                    className="block text-sm font-medium text-neutral-700 mb-2"
-                  >
-                    Pincode
-                  </label>
-                  <input
-                    type="text"
-                    id="pincode"
-                    name="pincode"
-                    value={formData.pincode}
-                    onChange={handleChange}
-                    required
-                    placeholder="Enter your pincode"
                     className={cn(
                       "w-full px-4 py-3",
                       "bg-white border border-neutral-300 rounded-md",
