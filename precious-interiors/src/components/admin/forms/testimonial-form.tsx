@@ -45,14 +45,20 @@ export function TestimonialForm({ testimonial }: { testimonial?: Testimonial }) 
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-neutral-700 mb-1">Quote *</label>
-        <textarea name="quote" required rows={4} defaultValue={testimonial?.quote} className="w-full px-4 py-2 border border-neutral-300 rounded-md" />
+        <label className="block text-sm font-medium text-neutral-700 mb-1">Feedback *</label>
+        <textarea name="quote" required rows={4} defaultValue={testimonial?.quote} placeholder="Client's feedback about your service..." className="w-full px-4 py-2 border border-neutral-300 rounded-md" />
       </div>
 
       <div>
         <label className="block text-sm font-medium text-neutral-700 mb-1">Client Photo URL *</label>
         <input name="image_url" type="url" required defaultValue={testimonial?.image_url} placeholder="https://example.com/photo.jpg" className="w-full px-4 py-2 border border-neutral-300 rounded-md" />
         <p className="text-xs text-neutral-500 mt-1">Paste a direct URL to the client photo</p>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-neutral-700 mb-1">Project Image URL</label>
+        <input name="project_image_url" type="url" defaultValue={testimonial?.project_image_url || ''} placeholder="https://example.com/project.jpg" className="w-full px-4 py-2 border border-neutral-300 rounded-md" />
+        <p className="text-xs text-neutral-500 mt-1">Optional - shown as large image on website</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4">

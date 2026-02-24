@@ -52,8 +52,7 @@ export function InquiryModal() {
     pincode: "",
     confirmDetails: false,
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
+  
   // Prevent body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
@@ -89,14 +88,12 @@ export function InquiryModal() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.confirmDetails) {
       return;
     }
-
-    setIsSubmitting(true);
 
     const serviceLabel = serviceOptions.find(o => o.value === formData.serviceType)?.label || formData.serviceType;
     const budgetLabel = budgetOptions.find(o => o.value === formData.budgetRange)?.label || formData.budgetRange;
@@ -111,9 +108,7 @@ export function InquiryModal() {
 *Address:* ${formData.address}
 *Pincode:* ${formData.pincode}`;
 
-    // Small delay for UX feedback
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
+    // Open WhatsApp immediately (before any delays to avoid popup blocking)
     openWhatsApp(whatsappMessage);
 
     // Reset form and close modal
@@ -127,7 +122,6 @@ export function InquiryModal() {
       pincode: "",
       confirmDetails: false,
     });
-    setIsSubmitting(false);
     closeModal();
   };
 
@@ -433,7 +427,7 @@ export function InquiryModal() {
                 {/* Submit button */}
                 <button
                   type="submit"
-                  disabled={isSubmitting || !formData.confirmDetails}
+                  disabled={!formData.confirmDetails}
                   className={cn(
                     "w-full py-4 mt-4",
                     "bg-[#F5A623] text-white",
@@ -443,7 +437,7 @@ export function InquiryModal() {
                     "rounded-md"
                   )}
                 >
-                  {isSubmitting ? "Sending..." : "GET FREE ESTIMATE"}
+                  GET FREE ESTIMATE
                 </button>
               </form>
             </div>

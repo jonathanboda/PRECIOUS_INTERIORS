@@ -61,9 +61,7 @@ export function ContactSection({ contactInfo: propsContactInfo }: ContactSection
     pincode: "",
     confirmDetails: false,
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const sectionRef = useRef<HTMLElement>(null);
+    const sectionRef = useRef<HTMLElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
 
   // Use props or defaults
@@ -112,14 +110,12 @@ export function ContactSection({ contactInfo: propsContactInfo }: ContactSection
     );
   }, { scope: sectionRef });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!formData.confirmDetails) {
       return;
     }
-
-    setIsSubmitting(true);
 
     const serviceLabel = serviceOptions.find(o => o.value === formData.serviceType)?.label || formData.serviceType;
     const budgetLabel = budgetOptions.find(o => o.value === formData.budgetRange)?.label || formData.budgetRange;
@@ -134,26 +130,20 @@ export function ContactSection({ contactInfo: propsContactInfo }: ContactSection
 *Address:* ${formData.address}
 *Pincode:* ${formData.pincode}`;
 
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    // Open WhatsApp immediately (before any delays to avoid popup blocking)
+    openWhatsApp(whatsappMessage);
 
-    setIsSubmitting(false);
-    setIsSuccess(true);
-
-    // Reset after showing success
-    setTimeout(() => {
-      openWhatsApp(whatsappMessage);
-      setIsSuccess(false);
-      setFormData({
-        name: "",
-        mobile: "",
-        serviceType: "",
-        spaceSize: "",
-        budgetRange: "",
-        address: "",
-        pincode: "",
-        confirmDetails: false,
-      });
-    }, 1500);
+    // Reset form
+    setFormData({
+      name: "",
+      mobile: "",
+      serviceType: "",
+      spaceSize: "",
+      budgetRange: "",
+      address: "",
+      pincode: "",
+      confirmDetails: false,
+    });
   };
 
   const handleChange = (
@@ -516,31 +506,19 @@ export function ContactSection({ contactInfo: propsContactInfo }: ContactSection
                 {/* Submit button */}
                 <button
                   type="submit"
-                  disabled={isSubmitting || isSuccess || !formData.confirmDetails}
+                  disabled={!formData.confirmDetails}
                   className={cn(
                     "w-full py-4 mt-4",
-                    isSuccess ? "bg-green-500" : "bg-[#F5A623]",
+                    "bg-[#F5A623]",
                     "text-white",
                     "font-semibold text-sm tracking-wide uppercase",
                     "hover:bg-[#E09515] transition-colors duration-200",
                     "disabled:cursor-not-allowed",
-                    !formData.confirmDetails && !isSubmitting && !isSuccess && "opacity-70",
+                    !formData.confirmDetails && "opacity-70",
                     "rounded-md"
                   )}
                 >
-                  {isSuccess ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <Check className="w-5 h-5" />
-                      Sent Successfully!
-                    </span>
-                  ) : isSubmitting ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Sending...
-                    </span>
-                  ) : (
-                    "GET FREE ESTIMATE"
-                  )}
+                  GET FREE ESTIMATE
                 </button>
               </form>
             </div>
