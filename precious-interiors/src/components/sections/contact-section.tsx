@@ -52,10 +52,12 @@ const budgetOptions = [
 
 export function ContactSection({ contactInfo: propsContactInfo }: ContactSectionProps) {
   const [formData, setFormData] = useState({
+    name: "",
     mobile: "",
     serviceType: "",
     spaceSize: "",
     budgetRange: "",
+    address: "",
     pincode: "",
     confirmDetails: false,
   });
@@ -124,10 +126,12 @@ export function ContactSection({ contactInfo: propsContactInfo }: ContactSection
 
     const whatsappMessage = `*Request a Quote - Precious Interiors*
 
+*Name:* ${formData.name}
 *Mobile:* ${formData.mobile}
 *Service Type:* ${serviceLabel}
 *Space Size:* ${formData.spaceSize} sq.ft
 *Budget Range:* ${budgetLabel}
+*Address:* ${formData.address}
 *Pincode:* ${formData.pincode}`;
 
     await new Promise((resolve) => setTimeout(resolve, 800));
@@ -140,10 +144,12 @@ export function ContactSection({ contactInfo: propsContactInfo }: ContactSection
       openWhatsApp(whatsappMessage);
       setIsSuccess(false);
       setFormData({
+        name: "",
         mobile: "",
         serviceType: "",
         spaceSize: "",
         budgetRange: "",
+        address: "",
         pincode: "",
         confirmDetails: false,
       });
@@ -274,6 +280,32 @@ export function ContactSection({ contactInfo: propsContactInfo }: ContactSection
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Name */}
+                <div>
+                  <label
+                    htmlFor="contact-name"
+                    className="block text-sm font-medium text-neutral-700 mb-2"
+                  >
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    id="contact-name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    placeholder="Enter your name"
+                    className={cn(
+                      "w-full px-4 py-3",
+                      "bg-white border border-neutral-300 rounded-md",
+                      "text-neutral-900 placeholder:text-neutral-400",
+                      "focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500",
+                      "transition-colors duration-200"
+                    )}
+                  />
+                </div>
+
                 {/* Mobile */}
                 <div>
                   <label
@@ -390,6 +422,32 @@ export function ContactSection({ contactInfo: propsContactInfo }: ContactSection
                       </option>
                     ))}
                   </select>
+                </div>
+
+                {/* Address */}
+                <div>
+                  <label
+                    htmlFor="contact-address"
+                    className="block text-sm font-medium text-neutral-700 mb-2"
+                  >
+                    Address
+                  </label>
+                  <input
+                    type="text"
+                    id="contact-address"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    required
+                    placeholder="Enter your address"
+                    className={cn(
+                      "w-full px-4 py-3",
+                      "bg-white border border-neutral-300 rounded-md",
+                      "text-neutral-900 placeholder:text-neutral-400",
+                      "focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500",
+                      "transition-colors duration-200"
+                    )}
+                  />
                 </div>
 
                 {/* Pincode */}

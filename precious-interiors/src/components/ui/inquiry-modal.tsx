@@ -8,10 +8,12 @@ import { useInquiryModal } from "@/context/inquiry-modal-context";
 import { openWhatsApp } from "@/lib/whatsapp";
 
 interface FormData {
+  name: string;
   mobile: string;
   serviceType: string;
   spaceSize: string;
   budgetRange: string;
+  address: string;
   pincode: string;
   confirmDetails: boolean;
 }
@@ -41,10 +43,12 @@ const budgetOptions = [
 export function InquiryModal() {
   const { isOpen, closeModal } = useInquiryModal();
   const [formData, setFormData] = useState<FormData>({
+    name: "",
     mobile: "",
     serviceType: "",
     spaceSize: "",
     budgetRange: "",
+    address: "",
     pincode: "",
     confirmDetails: false,
   });
@@ -99,10 +103,12 @@ export function InquiryModal() {
 
     const whatsappMessage = `*Request a Quote - Precious Interiors*
 
+*Name:* ${formData.name}
 *Mobile:* ${formData.mobile}
 *Service Type:* ${serviceLabel}
 *Space Size:* ${formData.spaceSize} sq.ft
 *Budget Range:* ${budgetLabel}
+*Address:* ${formData.address}
 *Pincode:* ${formData.pincode}`;
 
     // Small delay for UX feedback
@@ -112,10 +118,12 @@ export function InquiryModal() {
 
     // Reset form and close modal
     setFormData({
+      name: "",
       mobile: "",
       serviceType: "",
       spaceSize: "",
       budgetRange: "",
+      address: "",
       pincode: "",
       confirmDetails: false,
     });
@@ -188,6 +196,32 @@ export function InquiryModal() {
             {/* Right Section - Form */}
             <div className="lg:w-3/5 p-6 lg:p-8 max-h-[70vh] lg:max-h-[80vh] overflow-y-auto">
               <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Name */}
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-neutral-700 mb-2"
+                  >
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    placeholder="Enter your name"
+                    className={cn(
+                      "w-full px-4 py-3",
+                      "bg-white border border-neutral-300 rounded-md",
+                      "text-neutral-900 placeholder:text-neutral-400",
+                      "focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500",
+                      "transition-colors duration-200"
+                    )}
+                  />
+                </div>
+
                 {/* Mobile */}
                 <div>
                   <label
@@ -304,6 +338,32 @@ export function InquiryModal() {
                       </option>
                     ))}
                   </select>
+                </div>
+
+                {/* Address */}
+                <div>
+                  <label
+                    htmlFor="address"
+                    className="block text-sm font-medium text-neutral-700 mb-2"
+                  >
+                    Address
+                  </label>
+                  <input
+                    type="text"
+                    id="address"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    required
+                    placeholder="Enter your address"
+                    className={cn(
+                      "w-full px-4 py-3",
+                      "bg-white border border-neutral-300 rounded-md",
+                      "text-neutral-900 placeholder:text-neutral-400",
+                      "focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500",
+                      "transition-colors duration-200"
+                    )}
+                  />
                 </div>
 
                 {/* Pincode */}
