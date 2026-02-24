@@ -1,8 +1,11 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { getProjects } from '@/lib/queries/projects'
 import { DeleteProjectButton } from '@/components/admin/delete-project-button'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
+
+export const dynamic = 'force-dynamic'
 
 export default async function ProjectsPage() {
   const projects = await getProjects()
@@ -52,11 +55,14 @@ export default async function ProjectsPage() {
               <tr key={project.id} className="hover:bg-neutral-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-                    <div className="h-12 w-16 relative flex-shrink-0">
-                      <img
+                    <div className="h-12 w-16 relative flex-shrink-0 bg-neutral-100 rounded overflow-hidden">
+                      <Image
                         src={project.image_url || '/images/placeholder.jpg'}
                         alt={project.title}
-                        className="h-12 w-16 object-cover rounded"
+                        fill
+                        sizes="64px"
+                        className="object-cover"
+                        loading="lazy"
                       />
                     </div>
                     <div className="ml-4">

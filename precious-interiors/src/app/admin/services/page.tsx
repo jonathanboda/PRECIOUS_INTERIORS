@@ -1,8 +1,11 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { getServices } from '@/lib/queries/services'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { DeleteServiceButton } from '@/components/admin/delete-service-button'
+
+export const dynamic = 'force-dynamic'
 
 export default async function ServicesPage() {
   const services = await getServices()
@@ -47,8 +50,15 @@ export default async function ServicesPage() {
                   <td className="px-6 py-4 text-sm text-neutral-500">{service.display_order}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="h-12 w-16 relative rounded overflow-hidden">
-                        <img src={service.image_url || '/images/placeholder.jpg'} alt={service.title} className="absolute inset-0 w-full h-full object-cover" />
+                      <div className="h-12 w-16 relative rounded overflow-hidden bg-neutral-100">
+                        <Image
+                          src={service.image_url || '/images/placeholder.jpg'}
+                          alt={service.title}
+                          fill
+                          sizes="64px"
+                          className="object-cover"
+                          loading="lazy"
+                        />
                       </div>
                       <div>
                         <p className="font-medium text-neutral-900">{service.title}</p>

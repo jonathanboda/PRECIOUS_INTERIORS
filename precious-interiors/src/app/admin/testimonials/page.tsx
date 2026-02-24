@@ -1,8 +1,11 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { getTestimonials } from '@/lib/queries/testimonials'
 import { Button } from '@/components/ui/button'
 import { Plus, Star } from 'lucide-react'
 import { DeleteTestimonialButton } from '@/components/admin/delete-testimonial-button'
+
+export const dynamic = 'force-dynamic'
 
 export default async function TestimonialsPage() {
   const testimonials = await getTestimonials()
@@ -35,8 +38,15 @@ export default async function TestimonialsPage() {
           {testimonials.map((testimonial) => (
             <div key={testimonial.id} className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-12 w-12 relative rounded-full overflow-hidden">
-                  <img src={testimonial.image_url || '/images/placeholder.jpg'} alt={testimonial.client_name} className="absolute inset-0 w-full h-full object-cover" />
+                <div className="h-12 w-12 relative rounded-full overflow-hidden bg-neutral-100">
+                  <Image
+                    src={testimonial.image_url || '/images/placeholder.jpg'}
+                    alt={testimonial.client_name}
+                    fill
+                    sizes="48px"
+                    className="object-cover"
+                    loading="lazy"
+                  />
                 </div>
                 <div>
                   <p className="font-medium text-neutral-900">{testimonial.client_name}</p>

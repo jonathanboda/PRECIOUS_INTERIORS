@@ -1,9 +1,12 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { getVideos } from '@/lib/queries/videos'
 import { Button } from '@/components/ui/button'
 import { Plus, Youtube, Instagram } from 'lucide-react'
 import { DeleteVideoButton } from '@/components/admin/delete-video-button'
 import { ToggleHomepageVideo } from '@/components/admin/toggle-homepage-video'
+
+export const dynamic = 'force-dynamic'
 
 export default async function VideosPage() {
   const videos = await getVideos()
@@ -35,8 +38,15 @@ export default async function VideosPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {videos.map((video) => (
             <div key={video.id} className="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden">
-              <div className="aspect-video relative">
-                <img src={video.thumbnail_url || '/images/placeholder.jpg'} alt={video.title} className="absolute inset-0 w-full h-full object-cover" />
+              <div className="aspect-video relative bg-neutral-100">
+                <Image
+                  src={video.thumbnail_url || '/images/placeholder.jpg'}
+                  alt={video.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover"
+                  loading="lazy"
+                />
                 <div className="absolute top-2 right-2 flex gap-2">
                   <ToggleHomepageVideo id={video.id} initialValue={video.show_on_homepage} />
                   <div className="p-1.5 bg-white rounded-full">

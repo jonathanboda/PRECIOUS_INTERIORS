@@ -43,9 +43,10 @@ function LogoIcon({ size, className }: { size: number; className?: string }) {
     <svg
       width={size}
       height={size}
-      viewBox="0 0 1024 1024"
+      viewBox="320 300 380 380"
       className={className}
       preserveAspectRatio="xMidYMid meet"
+      style={{ background: 'transparent' }}
     >
       <g transform="translate(0,1024) scale(0.1,-0.1)" fill="currentColor" stroke="none">
         <path d="M3880 6640 c0 -32 5 -52 13 -55 6 -2 30 -9 53 -14 63 -17 106 -51
