@@ -13,12 +13,14 @@ interface Testimonial {
   client_title: string
   project_type: string
   image_url: string
+  project_image_url: string | null
   rating: number
   display_order: number
 }
 
 export function TestimonialForm({ testimonial }: { testimonial?: Testimonial }) {
   const [imageUrl, setImageUrl] = useState(testimonial?.image_url || '')
+  const [projectImageUrl, setProjectImageUrl] = useState(testimonial?.project_image_url || '')
   const [state, formAction, isPending] = useActionState(
     async (_prevState: { error?: string } | null, formData: FormData) => {
       if (testimonial) return await updateTestimonial(testimonial.id, formData)
@@ -51,9 +53,16 @@ export function TestimonialForm({ testimonial }: { testimonial?: Testimonial }) 
         <textarea name="quote" required rows={4} defaultValue={testimonial?.quote} className="w-full px-4 py-2 border border-neutral-300 rounded-md" />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-neutral-700 mb-1">Client Image *</label>
-        <ImageUpload name="image_url" value={imageUrl} onChange={setImageUrl} />
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-1">Client Photo *</label>
+          <ImageUpload name="image_url" value={imageUrl} onChange={setImageUrl} />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-1">Project Image</label>
+          <ImageUpload name="project_image_url" value={projectImageUrl} onChange={setProjectImageUrl} />
+          <p className="text-xs text-neutral-500 mt-1">Optional - shown as large image on website</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">

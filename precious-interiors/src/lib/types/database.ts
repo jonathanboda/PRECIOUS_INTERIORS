@@ -45,7 +45,16 @@ export interface Database {
           created_at: string
           updated_at: string
         }
-        Insert: Omit<Database['public']['Tables']['inquiries']['Row'], 'id' | 'created_at' | 'updated_at' | 'status'>
+        Insert: {
+          name: string
+          email?: string | null
+          phone: string
+          project_type?: string | null
+          message: string
+          source: string
+          notes?: string | null
+          responded_at?: string | null
+        }
         Update: Partial<Database['public']['Tables']['inquiries']['Insert']>
       }
       services: {
@@ -73,6 +82,7 @@ export interface Database {
           client_title: string
           project_type: string
           image_url: string
+          project_image_url: string | null
           rating: number
           display_order: number
           created_at: string
@@ -109,6 +119,7 @@ export interface Database {
           platform: string
           url: string
           duration: string | null
+          show_on_homepage: boolean
           created_at: string
           updated_at: string
         }

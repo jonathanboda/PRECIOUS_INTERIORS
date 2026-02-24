@@ -34,7 +34,7 @@ export function ProjectsHero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="font-bellazio text-white/80 text-xl md:text-2xl max-w-2xl mx-auto mb-10"
+          className="font-cormorant italic text-white/80 text-xl md:text-2xl max-w-2xl mx-auto mb-10"
         >
           Explore our collection of transformative spaces where vision meets
           craftsmanship and dreams become reality.

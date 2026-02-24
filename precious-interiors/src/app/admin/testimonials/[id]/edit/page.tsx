@@ -4,8 +4,9 @@ import { ArrowLeft } from 'lucide-react'
 import { getTestimonialById } from '@/lib/queries/testimonials'
 import { TestimonialForm } from '@/components/admin/forms/testimonial-form'
 
-export default async function EditTestimonialPage({ params }: { params: { id: string } }) {
-  const testimonial = await getTestimonialById(params.id)
+export default async function EditTestimonialPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const testimonial = await getTestimonialById(id)
   if (!testimonial) notFound()
 
   return (

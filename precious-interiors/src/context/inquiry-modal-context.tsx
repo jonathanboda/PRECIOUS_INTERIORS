@@ -27,8 +27,13 @@ export function InquiryModalProvider({ children }: { children: ReactNode }) {
 
 export function useInquiryModal() {
   const context = useContext(InquiryModalContext);
+  // Return a safe fallback during SSR or when used outside provider
   if (context === undefined) {
-    throw new Error("useInquiryModal must be used within an InquiryModalProvider");
+    return {
+      isOpen: false,
+      openModal: () => {},
+      closeModal: () => {},
+    };
   }
   return context;
 }

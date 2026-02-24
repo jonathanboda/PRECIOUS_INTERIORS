@@ -9,6 +9,13 @@ import { cn } from "@/lib/utils";
 import { Logo } from "@/components/ui/logo";
 import { useInquiryModal } from "@/context/inquiry-modal-context";
 
+interface HeaderProps {
+  contactInfo?: {
+    phone?: string;
+    email?: string;
+  } | null;
+}
+
 const navLinks = [
   { name: "Home", href: "/" },
   { name: "Services", href: "/services" },
@@ -17,11 +24,26 @@ const navLinks = [
   { name: "Contact", href: "/contact" },
 ];
 
-export function Header() {
+const defaultContactInfo = {
+  phone: "+91 90100 91191",
+  email: "manikanta@thepreciousinteriors.com",
+};
+
+const defaultSocialLinks = [
+  { name: "Instagram", href: "https://www.instagram.com/the_precious_interiors?igsh=bDR2cXl6cmpsNThx&utm_source=qr" },
+  { name: "LinkedIn", href: "https://www.linkedin.com/company/the-precious-interior-designing-s/" },
+  { name: "YouTube", href: "https://youtube.com/@preciousinteriors-h7u?si=3kicvz-DIPFtH8VU" },
+];
+
+export function Header({ contactInfo }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const { openModal } = useInquiryModal();
+
+  // Use props or defaults
+  const phone = contactInfo?.phone || defaultContactInfo.phone;
+  const email = contactInfo?.email || defaultContactInfo.email;
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -29,8 +51,15 @@ export function Header() {
   };
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 50);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -236,16 +265,16 @@ export function Header() {
               >
                 <p className="text-xs tracking-[0.2em] uppercase text-white/40 mb-4">Get in touch</p>
                 <a
-                  href="mailto:manikanta@thepreciousinteriors.com"
+                  href={`mailto:${email}`}
                   className="block text-white/80 hover:text-gold-400 transition-colors text-lg font-medium mb-2"
                 >
-                  manikanta@thepreciousinteriors.com
+                  {email}
                 </a>
                 <a
-                  href="tel:+919010091191"
+                  href={`tel:${phone.replace(/\s/g, '')}`}
                   className="block text-white/80 hover:text-gold-400 transition-colors text-lg font-medium"
                 >
-                  +91 90100 91191
+                  {phone}
                 </a>
               </motion.div>
 
@@ -257,13 +286,15 @@ export function Header() {
                 transition={{ delay: 0.6, duration: 0.5 }}
                 className="mt-8 flex gap-8"
               >
-                {["Instagram", "Pinterest", "LinkedIn"].map((social) => (
+                {defaultSocialLinks.map((social) => (
                   <a
-                    key={social}
-                    href="#"
+                    key={social.name}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-white/50 hover:text-gold-400 transition-colors text-sm font-medium tracking-wider uppercase"
                   >
-                    {social}
+                    {social.name}
                   </a>
                 ))}
               </motion.div>

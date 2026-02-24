@@ -19,7 +19,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
 
   return (
     <form action={formAction} className="space-y-6">
-      <input type="hidden" name="redirectTo" value={redirectTo ?? '/admin'} />
+      <input type="hidden" name="redirectTo" value={redirectTo ?? '/admin/dashboard'} />
 
       {state?.error && (
         <div className="p-3 bg-red-50 border border-red-200 rounded-md">

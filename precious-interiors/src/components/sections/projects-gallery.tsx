@@ -50,7 +50,7 @@ interface Project {
   roomType: string;
   style: string;
   image: string;
-  year: number;
+  year: string;
   duration: string;
   sqft: string;
   featured: boolean;
@@ -95,7 +95,7 @@ export function ProjectsGallery({ projects }: ProjectsGalleryProps) {
             className="flex items-center justify-center gap-4 mb-4"
           >
             <span className="w-12 h-[2px] bg-primary-600" />
-            <span className="text-primary-600 text-sm font-semibold tracking-[0.2em] uppercase">
+            <span className="text-gold-500 text-sm font-semibold tracking-[0.25em] uppercase">
               Our Work
             </span>
             <span className="w-12 h-[2px] bg-primary-600" />

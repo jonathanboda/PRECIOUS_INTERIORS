@@ -1,16 +1,19 @@
 'use client'
 
-import { useTransition } from 'react'
+import { memo, useTransition } from 'react'
 import { deleteProject } from '@/lib/actions/projects'
 
-export function DeleteProjectButton({ id }: { id: string }) {
+export const DeleteProjectButton = memo(function DeleteProjectButton({ id }: { id: string }) {
   const [isPending, startTransition] = useTransition()
 
   const handleDelete = () => {
     if (!confirm('Are you sure you want to delete this project?')) return
 
     startTransition(async () => {
-      await deleteProject(id)
+      const result = await deleteProject(id)
+      if (result?.error) {
+        alert('Failed to delete project: ' + result.error)
+      }
     })
   }
 
@@ -23,4 +26,4 @@ export function DeleteProjectButton({ id }: { id: string }) {
       {isPending ? 'Deleting...' : 'Delete'}
     </button>
   )
-}
+})

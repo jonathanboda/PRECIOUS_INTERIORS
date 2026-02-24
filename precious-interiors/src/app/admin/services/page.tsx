@@ -19,41 +19,54 @@ export default async function ServicesPage() {
         </Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden">
-        <table className="min-w-full divide-y divide-neutral-200">
-          <thead className="bg-neutral-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase">Order</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase">Service</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase">Features</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-neutral-500 uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-neutral-200">
-            {services.map((service) => (
-              <tr key={service.id} className="hover:bg-neutral-50">
-                <td className="px-6 py-4 text-sm text-neutral-500">{service.display_order}</td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-12 w-16 relative rounded overflow-hidden">
-                      <img src={service.image_url || '/images/placeholder.jpg'} alt={service.title} className="absolute inset-0 w-full h-full object-cover" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-neutral-900">{service.title}</p>
-                      <p className="text-sm text-neutral-500 truncate max-w-xs">{service.description.slice(0, 60)}...</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-sm text-neutral-500">{service.features?.length || 0} features</td>
-                <td className="px-6 py-4 text-right space-x-2">
-                  <Link href={`/admin/services/${service.id}/edit`} className="text-sm text-primary-600 hover:text-primary-700">Edit</Link>
-                  <DeleteServiceButton id={service.id} />
-                </td>
+      {services.length === 0 ? (
+        <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-12 text-center">
+          <div className="mx-auto w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mb-4">
+            <Plus className="h-8 w-8 text-neutral-400" />
+          </div>
+          <h3 className="text-lg font-medium text-neutral-900 mb-2">No services yet</h3>
+          <p className="text-neutral-500 mb-6">Get started by adding your first service.</p>
+          <Link href="/admin/services/new">
+            <Button><Plus className="h-4 w-4 mr-2" />Add Service</Button>
+          </Link>
+        </div>
+      ) : (
+        <div className="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden">
+          <table className="min-w-full divide-y divide-neutral-200">
+            <thead className="bg-neutral-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase">Order</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase">Service</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase">Features</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-neutral-500 uppercase">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="divide-y divide-neutral-200">
+              {services.map((service) => (
+                <tr key={service.id} className="hover:bg-neutral-50">
+                  <td className="px-6 py-4 text-sm text-neutral-500">{service.display_order}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 w-16 relative rounded overflow-hidden">
+                        <img src={service.image_url || '/images/placeholder.jpg'} alt={service.title} className="absolute inset-0 w-full h-full object-cover" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-neutral-900">{service.title}</p>
+                        <p className="text-sm text-neutral-500 truncate max-w-xs">{service.description?.slice(0, 60) || ''}...</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-neutral-500">{service.features?.length || 0} features</td>
+                  <td className="px-6 py-4 text-right space-x-2">
+                    <Link href={`/admin/services/${service.id}/edit`} className="text-sm text-primary-600 hover:text-primary-700">Edit</Link>
+                    <DeleteServiceButton id={service.id} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   )
 }

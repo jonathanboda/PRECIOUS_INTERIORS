@@ -69,7 +69,7 @@ export function ProcessHero() {
             className="flex items-center justify-center gap-4 mb-6"
           >
             <span className="w-12 h-[2px] bg-gold-500" />
-            <span className="text-gold-400 text-sm font-semibold tracking-[0.2em] uppercase">
+            <span className="text-gold-500 text-sm font-semibold tracking-[0.25em] uppercase">
               The Journey
             </span>
             <span className="w-12 h-[2px] bg-gold-500" />
@@ -149,12 +149,9 @@ export function ProcessHero() {
         <span className="text-xs tracking-[0.2em] uppercase font-medium">
           Explore Our Process
         </span>
-        <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-        >
+        <div className="animate-bounce">
           <ChevronDown className="w-5 h-5" />
-        </motion.div>
+        </div>
       </motion.button>
     </section>
   );

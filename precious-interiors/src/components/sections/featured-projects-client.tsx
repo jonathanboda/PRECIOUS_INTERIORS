@@ -1,12 +1,13 @@
 "use client";
 
 import { useRef, useState, useCallback } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { motion, useMotionValue, useSpring, useTransform, useScroll } from "framer-motion";
+import { ArrowRight, Eye, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { MotionImage } from "@/components/ui/motion-image";
 
 // Register GSAP plugins
 if (typeof window !== "undefined") {
@@ -42,7 +43,7 @@ interface FeaturedProjectsClientProps {
   projects: Project[];
 }
 
-// 3D Project Card with Tilt Effect
+// Enhanced 3D Project Card with Premium Effects
 function ProjectCard({
   project,
   isLarge,
@@ -54,7 +55,7 @@ function ProjectCard({
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const glowRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
   // Motion values for tilt effect
@@ -64,17 +65,17 @@ function ProjectCard({
   const springX = useSpring(x, springConfig);
   const springY = useSpring(y, springConfig);
 
-  // 3D rotation transforms
-  const rotateX = useTransform(springY, [-0.5, 0.5], [8, -8]);
-  const rotateY = useTransform(springX, [-0.5, 0.5], [-8, 8]);
+  // 3D rotation transforms - more dramatic for premium feel
+  const rotateX = useTransform(springY, [-0.5, 0.5], [12, -12]);
+  const rotateY = useTransform(springX, [-0.5, 0.5], [-12, 12]);
 
   // Parallax for image
-  const imageX = useTransform(springX, [-0.5, 0.5], [-15, 15]);
-  const imageY = useTransform(springY, [-0.5, 0.5], [-15, 15]);
+  const imageX = useTransform(springX, [-0.5, 0.5], [-20, 20]);
+  const imageY = useTransform(springY, [-0.5, 0.5], [-20, 20]);
 
   // Dynamic shadow
-  const shadowX = useTransform(springX, [-0.5, 0.5], [20, -20]);
-  const shadowY = useTransform(springY, [-0.5, 0.5], [-20, 20]);
+  const shadowX = useTransform(springX, [-0.5, 0.5], [25, -25]);
+  const shadowY = useTransform(springY, [-0.5, 0.5], [-25, 25]);
 
   // Handle mouse movement for tilt
   const handleMouseMove = useCallback(
@@ -104,22 +105,18 @@ function ProjectCard({
     setIsHovered(true);
   }, []);
 
-  // Handle image load
-  const handleImageLoad = useCallback(() => {
-    setIsLoaded(true);
-  }, []);
-
   return (
     <motion.div
       ref={cardRef}
       className={`project-card relative ${isLarge ? "md:col-span-2" : ""}`}
       style={{
-        perspective: 1000,
+        perspective: 1200,
         transformStyle: "preserve-3d",
       }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onMouseEnter={handleMouseEnter}
+      data-cursor-view
     >
       <Link href={`/projects/${project.slug}`} className="group block">
         <motion.div
@@ -132,10 +129,22 @@ function ProjectCard({
             transformStyle: "preserve-3d",
           }}
           whileHover={{
-            y: -10,
+            y: -12,
             transition: { duration: 0.4, ease: premiumEasing },
           }}
         >
+          {/* Gold border glow on hover */}
+          <motion.div
+            ref={glowRef}
+            className="absolute inset-0 z-20 pointer-events-none"
+            style={{
+              boxShadow: isHovered
+                ? "inset 0 0 0 2px rgba(201, 162, 39, 0.5), 0 0 30px rgba(201, 162, 39, 0.2)"
+                : "inset 0 0 0 0px rgba(201, 162, 39, 0)",
+              transition: "box-shadow 0.4s ease",
+            }}
+          />
+
           {/* Dynamic Shadow Layer */}
           <motion.div
             className="absolute inset-0 -z-10"
@@ -143,128 +152,138 @@ function ProjectCard({
               x: isHovered ? shadowX : 0,
               y: isHovered ? shadowY : 0,
               boxShadow: isHovered
-                ? "0 30px 60px rgba(0, 0, 0, 0.3)"
+                ? "0 40px 80px rgba(0, 0, 0, 0.35)"
                 : "0 10px 30px rgba(0, 0, 0, 0.1)",
               transition: "box-shadow 0.4s ease",
             }}
           />
 
-          {/* Blur placeholder */}
-          <div
-            className={`absolute inset-0 bg-neutral-300 transition-opacity duration-700 ${
-              isLoaded ? "opacity-0" : "opacity-100"
-            }`}
-            style={{
-              backgroundImage: `url('${isValidImageUrl(project.image) ? project.image : FALLBACK_IMAGE}')`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              filter: "blur(20px)",
-              transform: "scale(1.1)",
-            }}
-          />
-
-          {/* Main Image with Parallax */}
+          {/* Main Image with Parallax - No blur effect */}
           <motion.img
             ref={imageRef}
             src={isValidImageUrl(project.image) ? project.image : FALLBACK_IMAGE}
             alt={project.title}
-            onLoad={handleImageLoad}
-            className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ${
-              isLoaded ? "opacity-100 blur-0" : "opacity-0 blur-md"
-            }`}
+            className="absolute inset-0 w-full h-full object-cover"
             style={{
               x: isHovered ? imageX : 0,
               y: isHovered ? imageY : 0,
-              scale: isHovered ? 1.08 : 1,
+              scale: isHovered ? 1.1 : 1,
             }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
           />
 
-          {/* Default Gradient (subtle) */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+          {/* Premium gradient overlays */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-transparent" />
 
           {/* Hover Overlay with smooth transition */}
           <motion.div
-            className="absolute inset-0 bg-black/0"
+            className="absolute inset-0"
             animate={{
-              backgroundColor: isHovered ? "rgba(0,0,0,0.35)" : "rgba(0,0,0,0)",
+              backgroundColor: isHovered ? "rgba(26, 58, 47, 0.4)" : "rgba(0,0,0,0)",
             }}
             transition={{ duration: 0.4, ease: premiumEasing }}
           />
 
           {/* Glossy reflection overlay */}
           <motion.div
-            className="absolute inset-0 pointer-events-none overflow-hidden"
+            className="absolute inset-0 pointer-events-none overflow-hidden z-10"
             style={{
               background: useTransform(
                 springX,
                 [-0.5, 0, 0.5],
                 [
-                  "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 50%, transparent 100%)",
+                  "linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%, transparent 100%)",
                   "linear-gradient(135deg, transparent 0%, transparent 50%, transparent 100%)",
-                  "linear-gradient(135deg, transparent 0%, transparent 50%, rgba(255,255,255,0.12) 100%)",
+                  "linear-gradient(135deg, transparent 0%, transparent 50%, rgba(255,255,255,0.2) 100%)",
                 ]
               ),
             }}
           />
 
           {/* Content Overlay */}
-          <div className="absolute inset-0 flex flex-col justify-end p-6 lg:p-8">
-            {/* Category Badge */}
+          <div className="absolute inset-0 flex flex-col justify-end p-6 lg:p-8 z-10">
+            {/* Category Badge with gold accent */}
             <motion.div
               className="mb-3"
               initial={{ opacity: 0, y: 20 }}
               animate={{
-                opacity: isHovered ? 1 : 0,
-                y: isHovered ? 0 : 20,
+                opacity: isHovered ? 1 : 0.8,
+                y: isHovered ? 0 : 5,
               }}
               transition={{ duration: 0.4, ease: premiumEasing }}
             >
-              <span className="inline-block px-3 py-1 bg-white/90 backdrop-blur-sm text-neutral-900 text-xs font-medium tracking-wide uppercase">
+              <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-gold-500/90 backdrop-blur-sm text-neutral-900 text-xs font-bold tracking-widest uppercase shadow-lg">
+                <span className="w-1.5 h-1.5 bg-neutral-900 rounded-full" />
                 {project.roomType}
               </span>
             </motion.div>
 
             {/* Title */}
             <motion.h3
-              className={`font-cinzel font-medium text-white mb-1 ${
-                isLarge ? "text-2xl lg:text-3xl" : "text-xl lg:text-2xl"
+              className={`font-cinzel font-semibold text-white mb-1 drop-shadow-lg ${
+                isLarge ? "text-2xl lg:text-4xl" : "text-xl lg:text-2xl"
               }`}
               animate={{
-                y: isHovered ? -4 : 0,
+                y: isHovered ? -6 : 0,
               }}
               transition={{ duration: 0.4, ease: premiumEasing }}
             >
               {project.title}
             </motion.h3>
 
-            {/* Location */}
+            {/* Location with gold accent */}
             <motion.p
-              className="text-white/80 text-sm"
+              className="text-white/90 text-sm flex items-center gap-2"
               animate={{
-                y: isHovered ? -4 : 0,
+                y: isHovered ? -6 : 0,
               }}
               transition={{ duration: 0.4, ease: premiumEasing, delay: 0.05 }}
             >
+              <span className="w-4 h-[1px] bg-gold-500" />
               {project.location}
             </motion.p>
 
-            {/* Arrow with magnetic effect */}
+            {/* View Project Button */}
             <motion.div
               className="absolute bottom-6 right-6 lg:bottom-8 lg:right-8"
-              initial={{ opacity: 0, x: 20, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.8, rotate: -10 }}
               animate={{
                 opacity: isHovered ? 1 : 0,
-                x: isHovered ? 0 : 20,
                 scale: isHovered ? 1 : 0.8,
+                rotate: isHovered ? 0 : -10,
               }}
               transition={{ duration: 0.4, ease: premiumEasing }}
-              whileHover={{ scale: 1.15 }}
             >
-              <span className="flex items-center justify-center w-10 h-10 bg-white rounded-full shadow-lg">
-                <ArrowRight className="w-4 h-4 text-neutral-900" />
-              </span>
+              <motion.span
+                className="flex items-center justify-center w-14 h-14 bg-gold-500 rounded-full shadow-xl"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                style={{
+                  boxShadow: "0 8px 30px rgba(201, 162, 39, 0.4)",
+                }}
+              >
+                <Eye className="w-5 h-5 text-neutral-900" />
+              </motion.span>
             </motion.div>
           </div>
+
+          {/* Decorative corner accents */}
+          <motion.div
+            className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-gold-500/0"
+            animate={{
+              borderColor: isHovered ? "rgba(201, 162, 39, 0.6)" : "rgba(201, 162, 39, 0)",
+            }}
+            transition={{ duration: 0.3 }}
+          />
+          <motion.div
+            className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-gold-500/0"
+            animate={{
+              borderColor: isHovered ? "rgba(201, 162, 39, 0.6)" : "rgba(201, 162, 39, 0)",
+            }}
+            transition={{ duration: 0.3 }}
+          />
         </motion.div>
       </Link>
     </motion.div>
@@ -275,7 +294,15 @@ export function FeaturedProjectsClient({ projects }: FeaturedProjectsClientProps
   const sectionRef = useRef<HTMLElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  // GSAP Staggered Grid Reveal
+  // Scroll-based parallax for section
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "10%"]);
+
+  // GSAP Staggered Grid Reveal with enhanced animation
   useGSAP(
     () => {
       if (!gridRef.current) return;
@@ -285,8 +312,9 @@ export function FeaturedProjectsClient({ projects }: FeaturedProjectsClientProps
       // Set initial state
       gsap.set(cards, {
         opacity: 0,
-        scale: 0.9,
-        y: 60,
+        scale: 0.85,
+        y: 80,
+        rotateX: -15,
       });
 
       // Create staggered reveal animation
@@ -294,27 +322,29 @@ export function FeaturedProjectsClient({ projects }: FeaturedProjectsClientProps
         // Calculate stagger based on grid position
         const row = Math.floor(index / 3);
         const col = index % 3;
-        const delay = (row * 0.15) + (col * 0.1);
+        const delay = (row * 0.12) + (col * 0.08);
 
         // Different reveal directions based on position
-        const xOffset = col === 0 ? -40 : col === 2 ? 40 : 0;
+        const xOffset = col === 0 ? -50 : col === 2 ? 50 : 0;
 
         gsap.fromTo(
           card,
           {
             opacity: 0,
-            scale: 0.9,
-            y: 60,
+            scale: 0.85,
+            y: 80,
             x: xOffset,
+            rotateX: -15,
           },
           {
             opacity: 1,
             scale: 1,
             y: 0,
             x: 0,
-            duration: 0.8,
+            rotateX: 0,
+            duration: 1,
             delay,
-            ease: "power3.out",
+            ease: "power4.out",
             scrollTrigger: {
               trigger: gridRef.current,
               start: "top 80%",
@@ -335,11 +365,24 @@ export function FeaturedProjectsClient({ projects }: FeaturedProjectsClientProps
   return (
     <section
       ref={sectionRef}
-      className="relative py-24 lg:py-32 bg-[#FAF9F6] overflow-hidden"
+      className="relative py-28 lg:py-40 bg-cream overflow-hidden"
     >
-      <div className="container mx-auto px-6 lg:px-12">
+      {/* Background decorations */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        style={{ y: backgroundY }}
+      >
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gold-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary-600/5 rounded-full blur-3xl" />
+      </motion.div>
+
+      {/* Decorative vertical lines */}
+      <div className="absolute inset-y-0 left-[8%] w-[1px] bg-gradient-to-b from-transparent via-gold-500/20 to-transparent hidden xl:block" />
+      <div className="absolute inset-y-0 right-[8%] w-[1px] bg-gradient-to-b from-transparent via-gold-500/20 to-transparent hidden xl:block" />
+
+      <div className="container mx-auto px-6 lg:px-12 relative">
         {/* Section Header */}
-        <div className="text-center mb-16 lg:mb-20">
+        <div className="text-center mb-16 lg:mb-24">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -347,11 +390,25 @@ export function FeaturedProjectsClient({ projects }: FeaturedProjectsClientProps
             transition={{ duration: 0.6 }}
             className="flex items-center justify-center gap-4 mb-6"
           >
-            <span className="w-12 h-[1px] bg-gradient-to-r from-transparent to-gold-500" />
-            <span className="text-gold-500 text-xs font-medium tracking-[0.25em] uppercase">
+            <motion.span
+              className="w-16 h-[1px] bg-gradient-to-r from-transparent to-gold-500"
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              style={{ transformOrigin: "right" }}
+            />
+            <span className="text-gold-600 text-xs font-bold tracking-[0.3em] uppercase">
               Featured Work
             </span>
-            <span className="w-12 h-[1px] bg-gradient-to-l from-transparent to-gold-500" />
+            <motion.span
+              className="w-16 h-[1px] bg-gradient-to-l from-transparent to-gold-500"
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              style={{ transformOrigin: "left" }}
+            />
           </motion.div>
 
           <motion.h2
@@ -359,16 +416,39 @@ export function FeaturedProjectsClient({ projects }: FeaturedProjectsClientProps
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="font-cinzel text-4xl md:text-5xl lg:text-6xl font-medium text-neutral-900 tracking-tight"
+            className="font-cinzel text-4xl md:text-5xl lg:text-7xl font-semibold text-neutral-900 tracking-tight mb-4"
           >
-            Our Latest Projects
+            Our Latest
+            <span className="text-primary-600 relative ml-3">
+              Projects
+              <motion.span
+                className="absolute -bottom-2 left-0 w-full h-[3px] bg-gold-500"
+                initial={{ scaleX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                style={{ transformOrigin: "left" }}
+              />
+            </span>
           </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-neutral-600 text-lg max-w-2xl mx-auto"
+          >
+            Discover our portfolio of meticulously crafted interiors that embody
+            elegance, functionality, and timeless design.
+          </motion.p>
         </div>
 
         {/* Asymmetric Grid with GSAP Animation */}
         <div
           ref={gridRef}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-8"
+          style={{ perspective: 1200 }}
         >
           {projects.map((project, index) => {
             // Large cards: index 0 and 5 (first and last)
@@ -391,12 +471,12 @@ export function FeaturedProjectsClient({ projects }: FeaturedProjectsClientProps
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-16 lg:mt-20 text-center"
+          className="mt-16 lg:mt-24 text-center"
         >
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
             <Link
               href="/projects"
-              className="group inline-flex items-center gap-3 px-8 py-4 border border-neutral-900 text-neutral-900 font-medium text-sm tracking-wide uppercase hover:bg-neutral-900 hover:text-white transition-all duration-400"
+              className="group inline-flex items-center gap-4 px-10 py-5 bg-neutral-900 text-white font-semibold text-sm tracking-[0.1em] uppercase shadow-xl hover:bg-primary-600 transition-all duration-400"
             >
               <span>View All Projects</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />

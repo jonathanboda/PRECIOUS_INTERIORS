@@ -5,19 +5,16 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard,
-  MessageSquare,
   FileEdit,
   Briefcase,
   FolderKanban,
   Quote,
   ListOrdered,
   Video,
-  Settings,
 } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-  { name: 'Inquiries', href: '/admin/inquiries', icon: MessageSquare },
   {
     name: 'Content',
     href: '/admin/content',

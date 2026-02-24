@@ -14,14 +14,17 @@ export async function createVideo(formData: FormData) {
     platform: formData.get('platform') as string,
     url: formData.get('url') as string,
     duration: formData.get('duration') as string || null,
+    show_on_homepage: formData.get('show_on_homepage') === 'true',
   }
 
+  // @ts-expect-error - Supabase types issue
   const { error } = await supabase.from('videos').insert(insertData)
 
   if (error) {
     return { error: error.message }
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/gallery')
   revalidatePath('/admin/videos')
   redirect('/admin/videos')
@@ -41,6 +44,7 @@ export async function updateVideo(id: string, formData: FormData) {
 
   const { error } = await supabase
     .from('videos')
+    // @ts-expect-error - Supabase types issue
     .update(updateData)
     .eq('id', id)
 
@@ -48,6 +52,7 @@ export async function updateVideo(id: string, formData: FormData) {
     return { error: error.message }
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/gallery')
   revalidatePath('/admin/videos')
   redirect('/admin/videos')
@@ -62,6 +67,26 @@ export async function deleteVideo(id: string) {
     return { error: error.message }
   }
 
+  revalidatePath('/', 'layout')
+  revalidatePath('/gallery')
+  revalidatePath('/admin/videos')
+  return { success: true }
+}
+
+export async function toggleVideoHomepage(id: string, showOnHomepage: boolean) {
+  const supabase = await createClient()
+
+  const { error } = await supabase
+    .from('videos')
+    // @ts-expect-error - Supabase types issue
+    .update({ show_on_homepage: showOnHomepage })
+    .eq('id', id)
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  revalidatePath('/', 'layout')
   revalidatePath('/gallery')
   revalidatePath('/admin/videos')
   return { success: true }

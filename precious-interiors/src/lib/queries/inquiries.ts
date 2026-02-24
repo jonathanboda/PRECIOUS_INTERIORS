@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
+import type { Database } from '@/lib/types/database'
 
-export async function getInquiries() {
+type Inquiry = Database['public']['Tables']['inquiries']['Row']
+
+export async function getInquiries(): Promise<Inquiry[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('inquiries')
@@ -11,7 +14,7 @@ export async function getInquiries() {
   return data ?? []
 }
 
-export async function getInquiryById(id: string) {
+export async function getInquiryById(id: string): Promise<Inquiry | null> {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('inquiries')
@@ -19,7 +22,7 @@ export async function getInquiryById(id: string) {
     .eq('id', id)
     .single()
 
-  if (error) throw error
+  if (error && error.code !== 'PGRST116') throw error
   return data
 }
 

@@ -213,7 +213,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
           name="services"
           type="text"
           required
-          defaultValue={project?.services.join(', ')}
+          defaultValue={project?.services?.join(', ') ?? ''}
           placeholder="Interior Design, Space Planning, Custom Furniture"
           className="w-full px-4 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
         />

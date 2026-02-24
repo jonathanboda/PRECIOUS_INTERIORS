@@ -1,15 +1,35 @@
-"use client";
-
 import { PageHero } from "@/components/sections/page-hero";
 import { VideoSection } from "@/components/sections/video-section";
-import { getWorkplaceVideos, getRenovationVideos, getTestimonialVideos } from "@/data/videos";
-import { ArrowRight } from "lucide-react";
-import { openWhatsApp, WHATSAPP_MESSAGES } from "@/lib/whatsapp";
+import { getVideosByCategory } from "@/lib/queries/videos";
+import { GalleryCTA } from "./gallery-cta";
 
-export default function GalleryPage() {
-  const workplaceVideos = getWorkplaceVideos();
-  const renovationVideos = getRenovationVideos();
-  const testimonialVideos = getTestimonialVideos();
+// Disable caching to always show fresh data from database
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+export const metadata = {
+  title: "Gallery | Precious Interiors",
+  description: "Explore our video gallery showcasing workplace culture, renovation projects, and client testimonials.",
+};
+
+export default async function GalleryPage() {
+  const [workplaceVideos, renovationVideos, testimonialVideos] = await Promise.all([
+    getVideosByCategory("workplace"),
+    getVideosByCategory("renovations"),
+    getVideosByCategory("testimonials"),
+  ]);
+
+  // Map database videos to component format
+  const mapVideos = (videos: Awaited<ReturnType<typeof getVideosByCategory>>) =>
+    videos.map((video, index) => ({
+      id: index + 1, // Use numeric index as id
+      title: video.title,
+      thumbnail: video.thumbnail_url,
+      category: video.category as "workplace" | "renovations" | "testimonials",
+      platform: video.platform as "youtube" | "instagram",
+      url: video.url,
+      duration: video.duration || undefined,
+    }));
 
   return (
     <>
@@ -23,7 +43,7 @@ export default function GalleryPage() {
       <VideoSection
         label="Behind The Scenes"
         title="Our Workplace"
-        videos={workplaceVideos}
+        videos={mapVideos(workplaceVideos)}
         className="bg-[#FAF9F6]"
       />
 
@@ -31,7 +51,7 @@ export default function GalleryPage() {
       <VideoSection
         label="Project Transformations"
         title="Renovation Stories"
-        videos={renovationVideos}
+        videos={mapVideos(renovationVideos)}
         className="bg-white"
       />
 
@@ -39,28 +59,12 @@ export default function GalleryPage() {
       <VideoSection
         label="Client Stories"
         title="What Our Clients Say"
-        videos={testimonialVideos}
+        videos={mapVideos(testimonialVideos)}
         className="bg-[#FAF9F6]"
       />
 
       {/* CTA Section */}
-      <section className="py-20 lg:py-28 bg-primary-600">
-        <div className="container mx-auto px-6 lg:px-12 text-center">
-          <h2 className="font-cinzel text-3xl md:text-4xl lg:text-5xl font-medium text-white mb-6">
-            Ready to Start Your Project?
-          </h2>
-          <p className="text-white/80 text-lg max-w-2xl mx-auto mb-10">
-            Let&apos;s create a space that tells your story. Get in touch with our team today.
-          </p>
-          <button
-            onClick={() => openWhatsApp(WHATSAPP_MESSAGES.galleryInquiry)}
-            className="group inline-flex items-center gap-3 px-10 py-5 bg-white text-primary-600 font-semibold text-sm tracking-wide uppercase hover:bg-gold-500 hover:text-neutral-900 transition-all duration-400 cursor-pointer"
-          >
-            <span>Get in Touch</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </button>
-        </div>
-      </section>
+      <GalleryCTA />
     </>
   );
 }

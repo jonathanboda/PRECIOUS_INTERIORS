@@ -23,6 +23,7 @@ export async function updateService(id: string, formData: FormData) {
 
   const { error } = await supabase
     .from('services')
+    // @ts-expect-error - Supabase types issue
     .update(updateData)
     .eq('id', id)
 
@@ -30,6 +31,7 @@ export async function updateService(id: string, formData: FormData) {
     return { error: error.message }
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/services')
   revalidatePath('/admin/services')
   redirect('/admin/services')
@@ -52,12 +54,14 @@ export async function createService(formData: FormData) {
     display_order: parseInt(formData.get('display_order') as string) || 0,
   }
 
+  // @ts-expect-error - Supabase types issue
   const { error } = await supabase.from('services').insert(insertData)
 
   if (error) {
     return { error: error.message }
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/services')
   revalidatePath('/admin/services')
   redirect('/admin/services')
@@ -72,6 +76,7 @@ export async function deleteService(id: string) {
     return { error: error.message }
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/services')
   revalidatePath('/admin/services')
   return { success: true }

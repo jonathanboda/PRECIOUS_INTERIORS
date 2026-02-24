@@ -4,6 +4,36 @@ import { ProjectsGallery } from "@/components/sections/projects-gallery";
 import { Testimonials } from "@/components/sections/testimonials";
 import { Marquee } from "@/components/animations/marquee";
 import { getProjects } from "@/lib/queries/projects";
+import { getTestimonials } from "@/lib/queries/testimonials";
+
+// Disable caching to always show fresh data from database
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+interface ProjectData {
+  id: string;
+  slug: string;
+  title: string;
+  location: string;
+  room_type: string;
+  style: string;
+  image_url: string;
+  year: string;
+  duration: string;
+  sqft: string;
+  featured: boolean;
+}
+
+interface TestimonialData {
+  id: string;
+  quote: string;
+  client_name: string;
+  client_title: string;
+  project_type: string;
+  image_url: string;
+  project_image_url: string | null;
+  rating: number;
+}
 
 export const metadata: Metadata = {
   title: "Projects | The Precious Interiors",
@@ -17,7 +47,8 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectsPage() {
-  const projectsData = await getProjects();
+  const projectsData = await getProjects() as ProjectData[];
+  const testimonialsData = await getTestimonials() as TestimonialData[];
 
   // Map database fields to component expected fields
   const projects = projectsData.map(p => ({
@@ -30,7 +61,7 @@ export default async function ProjectsPage() {
     image: p.image_url,
     year: p.year,
     duration: p.duration,
-    sqft: p.sqft,
+    sqft: String(p.sqft),
     featured: p.featured,
   }));
 
@@ -39,7 +70,7 @@ export default async function ProjectsPage() {
       <ProjectsHero />
       <ProjectsGallery projects={projects} />
       <Marquee variant="light" speed="slow" />
-      <Testimonials />
+      <Testimonials testimonials={testimonialsData} />
     </>
   );
 }

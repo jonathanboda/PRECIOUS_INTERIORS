@@ -1,7 +1,7 @@
-import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AdminSidebar } from '@/components/admin/sidebar'
 import { AdminHeader } from '@/components/admin/header'
+import { headers } from 'next/headers'
 
 export const metadata = {
   title: 'Admin Panel | Precious Interiors',
@@ -12,11 +12,22 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
+  const headersList = await headers()
+  const pathname = headersList.get('x-pathname') || ''
+  const isLoginPage = pathname === '/admin' || pathname === '/admin/'
+
+  // For login page, just render children without admin shell
+  if (isLoginPage) {
+    return <>{children}</>
+  }
+
+  // For other admin pages, render with admin shell
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
+  // This shouldn't happen due to middleware, but just in case
   if (!user) {
-    redirect('/admin/login')
+    return <>{children}</>
   }
 
   const { data: profile } = await supabase
@@ -26,7 +37,7 @@ export default async function AdminLayout({
     .single()
 
   if (!profile) {
-    redirect('/')
+    return <>{children}</>
   }
 
   return (

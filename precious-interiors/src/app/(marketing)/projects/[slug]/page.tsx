@@ -2,13 +2,33 @@ import { notFound } from "next/navigation";
 import { getProjectBySlug, getRelatedProjects } from "@/lib/queries/projects";
 import { ProjectDetailClient } from "./project-detail-client";
 
+// Disable caching to always show fresh data from database
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+interface ProjectData {
+  id: string;
+  slug: string;
+  title: string;
+  location: string;
+  room_type: string;
+  style: string;
+  image_url: string;
+  year: string;
+  duration: string;
+  sqft: string;
+  description: string;
+  services: string[];
+  featured: boolean;
+}
+
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
-  const project = await getProjectBySlug(slug);
+  const project = await getProjectBySlug(slug) as ProjectData | null;
 
   if (!project) {
     return {
@@ -29,18 +49,21 @@ export async function generateMetadata({ params }: PageProps) {
 
 export default async function ProjectPage({ params }: PageProps) {
   const { slug } = await params;
-  const project = await getProjectBySlug(slug);
+  const projectData = await getProjectBySlug(slug) as ProjectData | null;
 
-  if (!project) {
-    notFound();
+  if (!projectData) {
+    return notFound();
   }
+
+  // Now TypeScript knows projectData is not null
+  const project = projectData;
 
   const relatedProjectsData = await getRelatedProjects(
     slug,
     project.room_type,
     project.style,
     3
-  );
+  ) as ProjectData[];
 
   // Map project fields
   const mappedProject = {
@@ -53,7 +76,7 @@ export default async function ProjectPage({ params }: PageProps) {
     image: project.image_url,
     year: project.year,
     duration: project.duration,
-    sqft: project.sqft,
+    sqft: String(project.sqft),
     description: project.description,
     services: project.services || [],
     featured: project.featured,

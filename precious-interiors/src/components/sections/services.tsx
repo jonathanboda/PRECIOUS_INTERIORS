@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { motion, AnimatePresence, PanInfo, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useInquiryModal } from "@/context/inquiry-modal-context";
-import { FloatingShapes } from "@/components/animations/floating-shapes";
+import { MotionImage } from "@/components/ui/motion-image";
 
 interface Service {
   id: string;
@@ -119,17 +119,13 @@ const featureTagVariants = {
     scale: 1,
     y: 0,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 500,
       damping: 25,
     },
   },
 };
 
-const swipeConfidenceThreshold = 10000;
-const swipePower = (offset: number, velocity: number) => {
-  return Math.abs(offset) * velocity;
-};
 
 // 3D Card Tilt Component
 function TiltCard({
@@ -253,16 +249,6 @@ export function ServicesSection({ services: propsServices }: ServicesSectionProp
     }
   };
 
-  const handleDragEnd = (e: MouseEvent | TouchEvent | PointerEvent, { offset, velocity }: PanInfo) => {
-    const swipe = swipePower(offset.x, velocity.x);
-
-    if (swipe < -swipeConfidenceThreshold && page < services.length - 1) {
-      paginate(1);
-    } else if (swipe > swipeConfidenceThreshold && page > 0) {
-      paginate(-1);
-    }
-  };
-
   const activeService = services[page];
 
   return (
@@ -275,15 +261,13 @@ export function ServicesSection({ services: propsServices }: ServicesSectionProp
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl" />
       <div className="absolute top-1/2 right-0 w-72 h-72 bg-primary-600/10 rounded-full blur-3xl" />
 
-      {/* Floating Shapes Background */}
-      <FloatingShapes
-        count={12}
-        colorClass="primary-500"
-        maxSize={100}
-        minSize={20}
-        speed={0.5}
-        className="opacity-30"
-      />
+      {/* Decorative floating elements - CSS only */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[15%] left-[10%] w-2 h-2 bg-primary-500/30 rounded-full animate-[gentle-float_6s_ease-in-out_infinite]" />
+        <div className="absolute top-[35%] right-[15%] w-3 h-3 bg-primary-400/20 rounded-full animate-[gentle-float_8s_ease-in-out_infinite_1s]" />
+        <div className="absolute bottom-[25%] left-[20%] w-2 h-2 bg-gold-500/25 rounded-full animate-[gentle-float_7s_ease-in-out_infinite_2s]" />
+        <div className="absolute top-[55%] right-[25%] w-4 h-4 bg-primary-500/15 rounded-full animate-[gentle-float_9s_ease-in-out_infinite_0.5s]" />
+      </div>
 
       <div className="container mx-auto px-6 lg:px-12 relative">
         {/* Section Header */}
@@ -296,7 +280,7 @@ export function ServicesSection({ services: propsServices }: ServicesSectionProp
             className="flex items-center justify-center gap-4 mb-6"
           >
             <span className="w-12 h-[2px] bg-primary-500" />
-            <span className="text-primary-400 text-sm font-semibold tracking-[0.2em] uppercase">
+            <span className="text-gold-500 text-sm font-semibold tracking-[0.25em] uppercase">
               Our Services
             </span>
             <span className="w-12 h-[2px] bg-primary-500" />
@@ -367,31 +351,51 @@ export function ServicesSection({ services: propsServices }: ServicesSectionProp
                 initial="enter"
                 animate="center"
                 exit="exit"
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={1}
-                onDragEnd={handleDragEnd}
-                className="absolute inset-0 cursor-grab active:cursor-grabbing"
+                className="absolute inset-0"
                 style={{ transformStyle: "preserve-3d" }}
               >
                 <TiltCard className="h-full">
                   {/* Premium Card with Image */}
-                  <div className="h-full relative rounded-3xl overflow-hidden shadow-[0_25px_80px_rgba(0,0,0,0.4)]">
-                    {/* Full Background Image */}
-                    <motion.div
-                      className="absolute inset-0 bg-cover bg-center"
-                      style={{ backgroundImage: `url('${activeService.image_url}')` }}
-                      initial={{ scale: 1.1 }}
-                      animate={{ scale: 1 }}
-                      transition={{ duration: 0.8, ease: premiumEasing }}
+                  <div className="h-full relative rounded-3xl overflow-hidden shadow-[0_25px_80px_rgba(0,0,0,0.4)] group/card">
+                    {/* Full Background Image with Motion Effects */}
+                    <MotionImage
+                      src={activeService.image_url}
+                      alt={activeService.title}
+                      fill
+                      hoverZoom
+                      zoomScale={1.08}
+                      kenBurns
+                      kenBurnsDuration={25}
+                      objectFit="cover"
+                      className="absolute inset-0"
                     />
 
                     {/* Premium Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-neutral-900/95 via-neutral-900/75 to-transparent" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/60 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-neutral-900/95 via-neutral-900/75 to-transparent z-[1]" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/60 via-transparent to-transparent z-[1]" />
+
+                    {/* Gold accent line animation */}
+                    <motion.div
+                      className="absolute top-0 left-0 h-1 bg-gradient-to-r from-gold-500 via-gold-400 to-transparent z-[2]"
+                      initial={{ width: 0 }}
+                      animate={{ width: "60%" }}
+                      transition={{ duration: 1, delay: 0.3, ease: premiumEasing }}
+                    />
 
                     {/* Content */}
-                    <div className="relative h-full p-8 md:p-12 flex flex-col justify-center max-w-2xl">
+                    <div className="relative h-full p-8 md:p-12 flex flex-col justify-center max-w-2xl z-[2]">
+                      {/* Service Number Badge */}
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.4, ease: premiumEasing }}
+                        className="inline-flex items-center gap-2 mb-4 w-fit"
+                      >
+                        <span className="text-gold-400 text-sm font-semibold tracking-widest">0{page + 1}</span>
+                        <span className="w-8 h-[1px] bg-gold-500/50" />
+                        <Sparkles className="w-4 h-4 text-gold-400" />
+                      </motion.div>
+
                       {/* Title */}
                       <motion.h3
                         key={`title-${page}`}
@@ -427,24 +431,30 @@ export function ServicesSection({ services: propsServices }: ServicesSectionProp
                         ))}
                       </motion.div>
 
-                      {/* CTA Button */}
+                      {/* CTA Button with Gold Accent */}
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.5, ease: premiumEasing }}
+                        className="relative z-30"
                       >
                         <Link
                           href="/services"
-                          className="inline-flex items-center gap-3 w-fit px-6 py-3 bg-primary-600 text-white font-semibold tracking-wide uppercase text-sm rounded-full shadow-[0_8px_24px_rgba(26,58,47,0.4)] hover:shadow-[0_12px_32px_rgba(26,58,47,0.5)] hover:bg-primary-500 hover:scale-105 transition-all duration-300 group/btn"
+                          className="relative inline-flex items-center gap-3 w-fit px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold tracking-wide uppercase text-sm rounded-none shadow-[0_8px_24px_rgba(26,58,47,0.4)] hover:shadow-[0_12px_32px_rgba(201,162,39,0.3)] hover:scale-105 transition-all duration-300 group/btn overflow-hidden cursor-pointer"
                         >
-                          <span>Explore Service</span>
-                          <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                          {/* Gold border accent */}
+                          <span className="absolute inset-0 border border-gold-500/30 group-hover/btn:border-gold-500/60 transition-colors pointer-events-none" />
+                          {/* Shine effect */}
+                          <span className="absolute inset-0 bg-gradient-to-r from-transparent via-gold-500/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none" />
+                          <span className="relative">Explore Service</span>
+                          <ArrowRight className="relative w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                         </Link>
                       </motion.div>
                     </div>
 
-                    {/* Decorative Glow */}
-                    <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary-500/20 rounded-full blur-3xl" />
+                    {/* Decorative Glow Elements */}
+                    <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary-500/20 rounded-full blur-3xl z-0" />
+                    <div className="absolute top-1/4 right-1/4 w-32 h-32 bg-gold-500/10 rounded-full blur-2xl z-0" />
                   </div>
                 </TiltCard>
               </motion.div>
@@ -470,9 +480,9 @@ export function ServicesSection({ services: propsServices }: ServicesSectionProp
             ))}
           </div>
 
-          {/* Swipe Hint */}
+          {/* Navigation Hint */}
           <p className="text-center text-neutral-500 text-sm mt-4 font-medium">
-            Swipe or use arrows to explore our services
+            Use arrows to explore our services
           </p>
         </div>
 

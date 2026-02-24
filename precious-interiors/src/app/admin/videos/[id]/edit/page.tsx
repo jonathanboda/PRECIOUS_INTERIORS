@@ -4,8 +4,9 @@ import { ArrowLeft } from 'lucide-react'
 import { getVideoById } from '@/lib/queries/videos'
 import { VideoForm } from '@/components/admin/forms/video-form'
 
-export default async function EditVideoPage({ params }: { params: { id: string } }) {
-  const video = await getVideoById(params.id)
+export default async function EditVideoPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const video = await getVideoById(id)
   if (!video) notFound()
 
   return (

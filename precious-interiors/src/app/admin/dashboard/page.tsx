@@ -1,15 +1,17 @@
-import { FolderKanban, MessageSquare, AlertCircle, CheckCircle } from 'lucide-react'
+import { FolderKanban, Briefcase, Quote, Video, ListOrdered, FileEdit } from 'lucide-react'
 import { StatsCard } from '@/components/admin/stats-card'
-import { getInquiryStats } from '@/lib/queries/inquiries'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
 
-  const [inquiryStats, projectsCount] = await Promise.all([
-    getInquiryStats(),
+  const [projectsCount, servicesCount, testimonialsCount, videosCount, processCount] = await Promise.all([
     supabase.from('projects').select('*', { count: 'exact', head: true }),
+    supabase.from('services').select('*', { count: 'exact', head: true }),
+    supabase.from('testimonials').select('*', { count: 'exact', head: true }),
+    supabase.from('videos').select('*', { count: 'exact', head: true }),
+    supabase.from('process_steps').select('*', { count: 'exact', head: true }),
   ])
 
   return (
@@ -23,27 +25,31 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         <StatsCard
-          title="Total Projects"
+          title="Projects"
           value={projectsCount.count ?? 0}
           icon={FolderKanban}
         />
         <StatsCard
-          title="Total Inquiries"
-          value={inquiryStats.total}
-          icon={MessageSquare}
+          title="Services"
+          value={servicesCount.count ?? 0}
+          icon={Briefcase}
         />
         <StatsCard
-          title="New Inquiries"
-          value={inquiryStats.new}
-          icon={AlertCircle}
-          className={inquiryStats.new > 0 ? 'border-orange-200 bg-orange-50' : ''}
+          title="Testimonials"
+          value={testimonialsCount.count ?? 0}
+          icon={Quote}
         />
         <StatsCard
-          title="Converted"
-          value={inquiryStats.converted}
-          icon={CheckCircle}
+          title="Videos"
+          value={videosCount.count ?? 0}
+          icon={Video}
+        />
+        <StatsCard
+          title="Process Steps"
+          value={processCount.count ?? 0}
+          icon={ListOrdered}
         />
       </div>
 
@@ -61,23 +67,25 @@ export default async function DashboardPage() {
               <span className="text-sm font-medium">Add Project</span>
             </Link>
             <Link
-              href="/admin/inquiries"
+              href="/admin/services/new"
               className="p-4 border border-neutral-200 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors text-center"
             >
-              <MessageSquare className="h-6 w-6 mx-auto text-primary-600 mb-2" />
-              <span className="text-sm font-medium">View Inquiries</span>
-            </Link>
-            <Link
-              href="/admin/content/hero"
-              className="p-4 border border-neutral-200 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors text-center"
-            >
-              <span className="text-sm font-medium">Edit Hero</span>
+              <Briefcase className="h-6 w-6 mx-auto text-primary-600 mb-2" />
+              <span className="text-sm font-medium">Add Service</span>
             </Link>
             <Link
               href="/admin/testimonials/new"
               className="p-4 border border-neutral-200 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors text-center"
             >
+              <Quote className="h-6 w-6 mx-auto text-primary-600 mb-2" />
               <span className="text-sm font-medium">Add Testimonial</span>
+            </Link>
+            <Link
+              href="/admin/videos/new"
+              className="p-4 border border-neutral-200 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors text-center"
+            >
+              <Video className="h-6 w-6 mx-auto text-primary-600 mb-2" />
+              <span className="text-sm font-medium">Add Video</span>
             </Link>
           </div>
         </div>

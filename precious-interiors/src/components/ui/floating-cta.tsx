@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight } from "lucide-react";
@@ -20,24 +20,34 @@ export function FloatingCTA({
   hideNearFooterPx = 300,
 }: FloatingCTAProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight;
-      const windowHeight = window.innerHeight;
-      const distanceFromBottom = docHeight - (scrollTop + windowHeight);
+      // Throttle with requestAnimationFrame
+      if (rafRef.current) return;
 
-      const shouldShow = scrollTop > showAfterPx;
-      const nearFooter = distanceFromBottom < hideNearFooterPx;
+      rafRef.current = requestAnimationFrame(() => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight;
+        const windowHeight = window.innerHeight;
+        const distanceFromBottom = docHeight - (scrollTop + windowHeight);
 
-      setIsVisible(shouldShow && !nearFooter);
+        const shouldShow = scrollTop > showAfterPx;
+        const nearFooter = distanceFromBottom < hideNearFooterPx;
+
+        setIsVisible(shouldShow && !nearFooter);
+        rafRef.current = null;
+      });
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, [showAfterPx, hideNearFooterPx]);
 
   const { openModal } = useInquiryModal();

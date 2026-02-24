@@ -61,7 +61,7 @@ export function ProjectStats() {
           transition={{ duration: 0.6 }}
           className="text-center mb-14"
         >
-          <span className="text-gold-400 text-sm font-semibold tracking-[0.2em] uppercase mb-4 block">
+          <span className="text-gold-500 text-sm font-semibold tracking-[0.25em] uppercase mb-4 block">
             Our Track Record
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-cinzel font-semibold text-white leading-[1.1]">

@@ -3,11 +3,22 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
+// Safe JSON parse helper to prevent crashes from malformed JSON
+function safeJsonParse<T>(json: string | null, defaultValue: T): T {
+  if (!json) return defaultValue
+  try {
+    return JSON.parse(json) as T
+  } catch {
+    return defaultValue
+  }
+}
+
 export async function updateSiteContent(sectionKey: string, content: Record<string, unknown>) {
   const supabase = await createClient()
 
   const { error } = await supabase
     .from('site_content')
+    // @ts-expect-error - Supabase types issue
     .upsert({
       section_key: sectionKey,
       content
@@ -20,7 +31,7 @@ export async function updateSiteContent(sectionKey: string, content: Record<stri
   }
 
   // Revalidate relevant paths based on section
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   if (sectionKey === 'contact_info') {
     revalidatePath('/contact')
   }
@@ -64,8 +75,8 @@ export async function updateAboutContent(formData: FormData) {
       primary: formData.get('imagePrimary') as string,
       secondary: formData.get('imageSecondary') as string,
     },
-    values: valuesRaw ? JSON.parse(valuesRaw) : [],
-    stats: statsRaw ? JSON.parse(statsRaw) : [],
+    values: safeJsonParse(valuesRaw, []),
+    stats: safeJsonParse(statsRaw, []),
     ctaButton: {
       text: formData.get('ctaButtonText') as string,
       href: formData.get('ctaButtonHref') as string,
@@ -83,7 +94,7 @@ export async function updateContactInfo(formData: FormData) {
     email: formData.get('email') as string,
     address: formData.get('address') as string,
     whatsappNumber: formData.get('whatsappNumber') as string,
-    businessHours: hoursRaw ? JSON.parse(hoursRaw) : [],
+    businessHours: safeJsonParse(hoursRaw, []),
   }
 
   return updateSiteContent('contact_info', content)
@@ -92,15 +103,15 @@ export async function updateContactInfo(formData: FormData) {
 export async function updateFooterContent(formData: FormData) {
   const content = {
     tagline: formData.get('tagline') as string,
-    companyLinks: JSON.parse(formData.get('companyLinks') as string || '[]'),
-    servicesLinks: JSON.parse(formData.get('servicesLinks') as string || '[]'),
-    socialLinks: JSON.parse(formData.get('socialLinks') as string || '[]'),
+    companyLinks: safeJsonParse(formData.get('companyLinks') as string, []),
+    servicesLinks: safeJsonParse(formData.get('servicesLinks') as string, []),
+    socialLinks: safeJsonParse(formData.get('socialLinks') as string, []),
     newsletter: {
       title: formData.get('newsletterTitle') as string,
       description: formData.get('newsletterDescription') as string,
       placeholder: formData.get('newsletterPlaceholder') as string,
     },
-    legalLinks: JSON.parse(formData.get('legalLinks') as string || '[]'),
+    legalLinks: safeJsonParse(formData.get('legalLinks') as string, []),
   }
 
   return updateSiteContent('footer', content)
@@ -115,7 +126,7 @@ export async function updateProjectStats(formData: FormData) {
       part1: formData.get('headlinePart1') as string,
       highlight: formData.get('headlineHighlight') as string,
     },
-    stats: statsRaw ? JSON.parse(statsRaw) : [],
+    stats: safeJsonParse(statsRaw, []),
     quote: formData.get('quote') as string,
   }
 
@@ -130,4 +141,10 @@ export async function updateServiceHighlights(formData: FormData) {
   }
 
   return updateSiteContent('service_highlights', content)
+}
+
+export async function updateStatsContent(formData: FormData) {
+  const statsJson = formData.get('stats') as string
+  const stats = safeJsonParse(statsJson, [])
+  return updateSiteContent('stats', { stats })
 }

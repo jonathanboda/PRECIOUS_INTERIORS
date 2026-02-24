@@ -4,8 +4,9 @@ import { ArrowLeft } from 'lucide-react'
 import { getServiceById } from '@/lib/queries/services'
 import { ServiceForm } from '@/components/admin/forms/service-form'
 
-export default async function EditServicePage({ params }: { params: { id: string } }) {
-  const service = await getServiceById(params.id)
+export default async function EditServicePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const service = await getServiceById(id)
   if (!service) notFound()
 
   return (

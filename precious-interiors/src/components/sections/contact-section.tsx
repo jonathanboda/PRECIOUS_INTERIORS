@@ -1,69 +1,44 @@
 "use client";
 
-import { useState, useRef, Suspense } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { Canvas, useFrame } from "@react-three/fiber";
 import { cn } from "@/lib/utils";
 import { Phone, Mail, ArrowRight, Clock, Check } from "lucide-react";
 import { openWhatsApp } from "@/lib/whatsapp";
 import { gsap } from "@/lib/gsap-config";
 import { useGSAP } from "@gsap/react";
-import * as THREE from "three";
 
-// 3D Floating Gold Sphere
-function FloatingSphere() {
-  const sphereRef = useRef<THREE.Mesh>(null);
+interface ContactSectionProps {
+  contactInfo?: {
+    phone?: string;
+    email?: string;
+    address?: string;
+    whatsappNumber?: string;
+    businessHours?: { day: string; hours: string }[];
+  } | null;
+}
 
-  useFrame((state) => {
-    if (sphereRef.current) {
-      sphereRef.current.rotation.y = state.clock.elapsedTime * 0.3;
-      sphereRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.4) * 0.3;
-      sphereRef.current.position.x = Math.cos(state.clock.elapsedTime * 0.3) * 0.2;
-    }
-  });
-
+// CSS-only floating gold sphere decoration
+function FloatingGoldSphere() {
   return (
-    <mesh ref={sphereRef}>
-      <sphereGeometry args={[1, 64, 64]} />
-      <meshStandardMaterial
-        color="#c9a227"
-        metalness={0.9}
-        roughness={0.1}
-        emissive="#c9a227"
-        emissiveIntensity={0.15}
-      />
-    </mesh>
+    <div className="relative w-full h-full">
+      {/* Main sphere with gradient */}
+      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gold-400 via-gold-500 to-gold-600 animate-[gentle-float_6s_ease-in-out_infinite] shadow-[0_0_40px_rgba(201,162,39,0.4)]" />
+      {/* Highlight */}
+      <div className="absolute top-2 left-2 w-1/3 h-1/3 rounded-full bg-white/30 blur-sm" />
+    </div>
   );
 }
 
-function SphereScene() {
-  return (
-    <Canvas
-      camera={{ position: [0, 0, 4], fov: 45 }}
-      style={{ background: "transparent" }}
-    >
-      <ambientLight intensity={0.3} />
-      <pointLight position={[5, 5, 5]} intensity={1} color="#fff5e0" />
-      <pointLight position={[-5, -5, -5]} intensity={0.3} color="#c9a227" />
-      <FloatingSphere />
-    </Canvas>
-  );
-}
-
-const contactInfo = [
-  {
-    icon: Phone,
-    title: "Call Us",
-    content: "+91 90100 91191",
-    href: "tel:+919010091191",
-  },
-  {
-    icon: Mail,
-    title: "Email Us",
-    content: "manikanta@thepreciousinteriors.com",
-    href: "mailto:manikanta@thepreciousinteriors.com",
-  },
-];
+const defaultContactInfo = {
+  phone: "+91 90100 91191",
+  email: "manikanta@thepreciousinteriors.com",
+  businessHours: [
+    { day: "Monday - Friday", hours: "9:00 AM - 6:00 PM" },
+    { day: "Saturday", hours: "10:00 AM - 4:00 PM" },
+    { day: "Sunday", hours: "By Appointment" },
+  ],
+};
 
 // Form Input with Gold Underline Animation
 function AnimatedInput({
@@ -473,7 +448,7 @@ function SubmitButton({
   );
 }
 
-export function ContactSection() {
+export function ContactSection({ contactInfo: propsContactInfo }: ContactSectionProps) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -485,6 +460,28 @@ export function ContactSection() {
   const [isSuccess, setIsSuccess] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
+
+  // Use props or defaults
+  const phone = propsContactInfo?.phone || defaultContactInfo.phone;
+  const email = propsContactInfo?.email || defaultContactInfo.email;
+  const businessHours = propsContactInfo?.businessHours && propsContactInfo.businessHours.length > 0
+    ? propsContactInfo.businessHours
+    : defaultContactInfo.businessHours;
+
+  const contactInfoItems = [
+    {
+      icon: Phone,
+      title: "Call Us",
+      content: phone,
+      href: `tel:${phone.replace(/\s/g, '')}`,
+    },
+    {
+      icon: Mail,
+      title: "Email Us",
+      content: email,
+      href: `mailto:${email}`,
+    },
+  ];
 
   // Form container slide-in animation
   useGSAP(() => {
@@ -549,11 +546,9 @@ ${formData.message}`;
       <div className="absolute top-0 left-0 w-1/3 h-full bg-gradient-to-r from-primary-600/20 to-transparent" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-gold-500/5 rounded-full blur-3xl" />
 
-      {/* 3D Floating Gold Sphere */}
-      <div className="absolute bottom-20 left-10 w-32 h-32 pointer-events-none opacity-40 hidden lg:block">
-        <Suspense fallback={null}>
-          <SphereScene />
-        </Suspense>
+      {/* Floating Gold Sphere - CSS only */}
+      <div className="absolute bottom-20 left-10 w-24 h-24 pointer-events-none opacity-50 hidden lg:block">
+        <FloatingGoldSphere />
       </div>
 
       <div className="container mx-auto px-6 lg:px-12 relative">
@@ -568,7 +563,7 @@ ${formData.message}`;
               className="flex items-center gap-4 mb-6"
             >
               <span className="w-12 h-[2px] bg-gold-500" />
-              <span className="text-gold-500 text-sm font-semibold tracking-[0.2em] uppercase">
+              <span className="text-gold-500 text-sm font-semibold tracking-[0.25em] uppercase">
                 Get In Touch
               </span>
             </motion.div>
@@ -598,7 +593,7 @@ ${formData.message}`;
 
             {/* Contact Info Cards */}
             <div className="space-y-4 mb-10">
-              {contactInfo.map((info, index) => {
+              {contactInfoItems.map((info, index) => {
                 const Icon = info.icon;
                 return (
                   <motion.a
@@ -641,18 +636,12 @@ ${formData.message}`;
                 </h4>
               </div>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-white/70">Monday - Friday</span>
-                  <span className="text-white font-medium">9:00 AM - 6:00 PM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-white/70">Saturday</span>
-                  <span className="text-white font-medium">10:00 AM - 4:00 PM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-white/70">Sunday</span>
-                  <span className="text-white font-medium">By Appointment</span>
-                </div>
+                {businessHours.map((item, index) => (
+                  <div key={index} className="flex justify-between">
+                    <span className="text-white/70">{item.day}</span>
+                    <span className="text-white font-medium">{item.hours}</span>
+                  </div>
+                ))}
               </div>
             </motion.div>
           </div>

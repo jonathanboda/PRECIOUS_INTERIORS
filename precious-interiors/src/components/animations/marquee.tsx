@@ -52,7 +52,7 @@ export function Marquee({
         className="absolute right-0 top-0 bottom-0 w-20 md:w-40 z-10 pointer-events-none bg-gradient-to-l from-primary-600 to-transparent"
       />
 
-      {/* Scrolling content */}
+      {/* Scrolling content - GPU accelerated */}
       <div
         className={cn(
           "flex whitespace-nowrap",
@@ -61,6 +61,7 @@ export function Marquee({
         style={{
           animation: `marquee ${speedMap[speed]} linear infinite`,
           animationDirection: reverse ? "reverse" : "normal",
+          willChange: "transform",
         }}
       >
         {/* Double the content for seamless loop */}

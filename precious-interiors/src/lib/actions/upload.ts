@@ -19,8 +19,15 @@ export async function uploadImage(formData: FormData) {
 
   const supabase = await createClient()
 
-  // Generate unique filename
-  const ext = file.name.split('.').pop()
+  // Generate unique filename with fallback extension based on MIME type
+  const extFromName = file.name.includes('.') ? file.name.split('.').pop() : null
+  const extFromType: Record<string, string> = {
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+    'image/gif': 'gif',
+  }
+  const ext = extFromName || extFromType[file.type] || 'jpg'
   const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`
   const path = `uploads/${filename}`
 

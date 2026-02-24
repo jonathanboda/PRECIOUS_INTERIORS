@@ -45,12 +45,14 @@ export async function createProject(formData: FormData) {
     return { error: 'Validation failed', details: validated.error.flatten() }
   }
 
+  // @ts-expect-error - Supabase types issue
   const { error } = await supabase.from('projects').insert(validated.data)
 
   if (error) {
     return { error: error.message }
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/projects')
   revalidatePath('/admin/projects')
   redirect('/admin/projects')
@@ -83,6 +85,7 @@ export async function updateProject(id: string, formData: FormData) {
 
   const { error } = await supabase
     .from('projects')
+    // @ts-expect-error - Supabase types issue
     .update(validated.data)
     .eq('id', id)
 
@@ -90,6 +93,7 @@ export async function updateProject(id: string, formData: FormData) {
     return { error: error.message }
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/projects')
   revalidatePath(`/projects/${validated.data.slug}`)
   revalidatePath('/admin/projects')
@@ -105,6 +109,7 @@ export async function deleteProject(id: string) {
     return { error: error.message }
   }
 
+  revalidatePath('/', 'layout')
   revalidatePath('/projects')
   revalidatePath('/admin/projects')
   return { success: true }

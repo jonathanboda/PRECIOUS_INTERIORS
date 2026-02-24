@@ -48,7 +48,7 @@ export function PageHero({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="font-bellazio text-gold-400/90 text-lg md:text-xl tracking-wide mb-4"
+            className="font-cormorant italic text-gold-400/90 text-lg md:text-xl tracking-wide mb-4"
           >
             {subtitle}
           </motion.span>

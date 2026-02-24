@@ -6,6 +6,9 @@ export async function middleware(request: NextRequest) {
     request,
   })
 
+  // Add pathname header for layout to use
+  supabaseResponse.headers.set('x-pathname', request.nextUrl.pathname)
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -21,6 +24,7 @@ export async function middleware(request: NextRequest) {
           supabaseResponse = NextResponse.next({
             request,
           })
+          supabaseResponse.headers.set('x-pathname', request.nextUrl.pathname)
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           )
@@ -30,10 +34,12 @@ export async function middleware(request: NextRequest) {
   )
 
   const { data: { user } } = await supabase.auth.getUser()
+  const pathname = request.nextUrl.pathname
+  const isLoginPage = pathname === '/admin' || pathname === '/admin/'
 
-  // Allow access to login page without authentication
-  if (request.nextUrl.pathname === '/admin/login') {
-    // Redirect logged-in admin users away from login page
+  // Allow access to login page (/admin) without authentication
+  if (isLoginPage) {
+    // Redirect logged-in admin users away from login page to dashboard
     if (user) {
       const { data: profile } = await supabase
         .from('admin_profiles')
@@ -42,19 +48,16 @@ export async function middleware(request: NextRequest) {
         .single()
 
       if (profile) {
-        return NextResponse.redirect(new URL('/admin', request.url))
+        return NextResponse.redirect(new URL('/admin/dashboard', request.url))
       }
     }
     return supabaseResponse
   }
 
-  // Protect /admin routes (except login)
-  if (request.nextUrl.pathname.startsWith('/admin')) {
+  // Protect /admin/* routes (not the login page)
+  if (pathname.startsWith('/admin')) {
     if (!user) {
-      const url = request.nextUrl.clone()
-      url.pathname = '/admin/login'
-      url.searchParams.set('redirectTo', request.nextUrl.pathname)
-      return NextResponse.redirect(url)
+      return NextResponse.redirect(new URL('/admin', request.url))
     }
 
     // Check if user is admin
@@ -74,5 +77,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/admin'],
 }

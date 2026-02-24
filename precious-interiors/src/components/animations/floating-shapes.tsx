@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 interface Shape {
   id: number;
@@ -11,6 +11,7 @@ interface Shape {
   y: number;
   duration: number;
   delay: number;
+  rotation: number;
 }
 
 interface FloatingShapesProps {
@@ -28,6 +29,12 @@ interface FloatingShapesProps {
   className?: string;
 }
 
+// Seeded pseudo-random function for consistent values between server and client
+function seededRandom(seed: number): number {
+  const x = Math.sin(seed * 9999) * 10000;
+  return x - Math.floor(x);
+}
+
 export function FloatingShapes({
   count = 8,
   colorClass = "primary-500",
@@ -36,16 +43,23 @@ export function FloatingShapes({
   speed = 1,
   className = "",
 }: FloatingShapesProps) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const shapes = useMemo<Shape[]>(() => {
     const shapeTypes: Shape["type"][] = ["circle", "ring", "diamond", "line"];
     return Array.from({ length: count }, (_, i) => ({
       id: i,
       type: shapeTypes[i % shapeTypes.length],
-      size: Math.random() * (maxSize - minSize) + minSize,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      duration: (15 + Math.random() * 20) / speed,
-      delay: Math.random() * -20,
+      size: seededRandom(i * 1.1) * (maxSize - minSize) + minSize,
+      x: seededRandom(i * 2.2) * 100,
+      y: seededRandom(i * 3.3) * 100,
+      duration: (15 + seededRandom(i * 4.4) * 20) / speed,
+      delay: seededRandom(i * 5.5) * -20,
+      rotation: seededRandom(i * 6.6) * 180,
     }));
   }, [count, maxSize, minSize, speed]);
 
@@ -81,7 +95,7 @@ export function FloatingShapes({
             style={{
               width: shape.size * 1.5,
               height: 2,
-              transform: `rotate(${Math.random() * 180}deg)`,
+              transform: `rotate(${shape.rotation}deg)`,
             }}
           />
         );
@@ -90,31 +104,26 @@ export function FloatingShapes({
     }
   };
 
+  // Don't render on server to avoid hydration mismatch
+  if (!isMounted) {
+    return <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`} />;
+  }
+
+  // Static shapes - no infinite animations for better performance
   return (
     <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
       {shapes.map((shape) => (
-        <motion.div
+        <div
           key={shape.id}
-          className="absolute"
+          className="absolute opacity-30"
           style={{
             left: `${shape.x}%`,
             top: `${shape.y}%`,
-          }}
-          animate={{
-            y: [0, -30, 0, 30, 0],
-            x: [0, 20, 0, -20, 0],
-            rotate: [0, 90, 180, 270, 360],
-            scale: [1, 1.1, 1, 0.9, 1],
-          }}
-          transition={{
-            duration: shape.duration,
-            delay: shape.delay,
-            repeat: Infinity,
-            ease: "easeInOut",
+            transform: `rotate(${shape.rotation}deg)`,
           }}
         >
           {renderShape(shape)}
-        </motion.div>
+        </div>
       ))}
     </div>
   );

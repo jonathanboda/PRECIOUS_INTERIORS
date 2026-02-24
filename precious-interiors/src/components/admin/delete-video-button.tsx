@@ -1,14 +1,19 @@
 'use client'
 
-import { useTransition } from 'react'
+import { memo, useTransition } from 'react'
 import { deleteVideo } from '@/lib/actions/videos'
 
-export function DeleteVideoButton({ id }: { id: string }) {
+export const DeleteVideoButton = memo(function DeleteVideoButton({ id }: { id: string }) {
   const [isPending, startTransition] = useTransition()
 
   const handleDelete = () => {
     if (!confirm('Delete this video?')) return
-    startTransition(() => deleteVideo(id))
+    startTransition(async () => {
+      const result = await deleteVideo(id)
+      if (result?.error) {
+        alert('Failed to delete video: ' + result.error)
+      }
+    })
   }
 
   return (
@@ -16,4 +21,4 @@ export function DeleteVideoButton({ id }: { id: string }) {
       {isPending ? 'Deleting...' : 'Delete'}
     </button>
   )
-}
+})

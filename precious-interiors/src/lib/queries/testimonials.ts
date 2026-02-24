@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
+import type { Database } from '@/lib/types/database'
 
-export async function getTestimonials() {
+type Testimonial = Database['public']['Tables']['testimonials']['Row']
+
+export async function getTestimonials(): Promise<Testimonial[]> {
   try {
     const supabase = await createClient()
     const { data, error } = await supabase
@@ -19,7 +22,7 @@ export async function getTestimonials() {
   }
 }
 
-export async function getTestimonialById(id: string) {
+export async function getTestimonialById(id: string): Promise<Testimonial | null> {
   try {
     const supabase = await createClient()
     const { data, error } = await supabase

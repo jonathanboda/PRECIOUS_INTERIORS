@@ -1,0 +1,5 @@
+# MCP configuration (contains secrets)
+.mcp.json
+
+# OS files
+nul

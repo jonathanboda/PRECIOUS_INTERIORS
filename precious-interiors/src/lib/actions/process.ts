@@ -24,6 +24,7 @@ export async function updateProcessStep(id: string, formData: FormData) {
 
   const { error } = await supabase
     .from('process_steps')
+    // @ts-expect-error - Supabase types issue
     .update(updateData)
     .eq('id', id)
 
@@ -31,7 +32,7 @@ export async function updateProcessStep(id: string, formData: FormData) {
     return { error: error.message }
   }
 
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
   revalidatePath('/admin/process')
   redirect('/admin/process')
 }

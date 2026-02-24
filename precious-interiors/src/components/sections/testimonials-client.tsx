@@ -1,13 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, Suspense } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Canvas, useFrame } from "@react-three/fiber";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
 import { gsap } from "@/lib/gsap-config";
 import { useGSAP } from "@gsap/react";
-import * as THREE from "three";
 
 interface Testimonial {
   id: string;
@@ -15,51 +13,13 @@ interface Testimonial {
   clientName: string;
   clientTitle: string;
   projectType: string;
-  image: string;
+  clientImage: string;
+  projectImage: string | null;
   rating: number;
 }
 
 interface TestimonialsClientProps {
   testimonials: Testimonial[];
-}
-
-// 3D Decorative Quote Mark
-function FloatingQuote() {
-  const meshRef = useRef<THREE.Mesh>(null);
-
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y = state.clock.elapsedTime * 0.2;
-      meshRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.2;
-    }
-  });
-
-  return (
-    <mesh ref={meshRef} position={[0, 0, 0]}>
-      <torusKnotGeometry args={[0.6, 0.2, 100, 16]} />
-      <meshStandardMaterial
-        color="#c9a227"
-        metalness={0.8}
-        roughness={0.2}
-        emissive="#c9a227"
-        emissiveIntensity={0.15}
-      />
-    </mesh>
-  );
-}
-
-function QuoteScene() {
-  return (
-    <Canvas
-      camera={{ position: [0, 0, 4], fov: 45 }}
-      style={{ background: "transparent" }}
-    >
-      <ambientLight intensity={0.4} />
-      <pointLight position={[5, 5, 5]} intensity={1} color="#fff5e0" />
-      <pointLight position={[-5, -5, -5]} intensity={0.3} color="#c9a227" />
-      <FloatingQuote />
-    </Canvas>
-  );
 }
 
 // Animated Star Rating with Sequential Fill and Sparkle
@@ -130,7 +90,7 @@ function TypedQuote({ quote, isActive }: { quote: string; isActive: boolean }) {
     setDisplayedText("");
 
     let currentIndex = 0;
-    const typingSpeed = 20; // ms per character
+    const typingSpeed = 30; // ms per character (optimized from 20ms)
 
     const typeInterval = setInterval(() => {
       if (currentIndex < quote.length) {
@@ -149,7 +109,7 @@ function TypedQuote({ quote, isActive }: { quote: string; isActive: boolean }) {
     <p className="text-xl md:text-2xl lg:text-3xl text-neutral-800 font-cinzel leading-relaxed mb-8">
       &ldquo;{displayedText}
       {isTyping && <span className="animate-pulse text-gold-500">|</span>}
-      {!isTyping && displayedText && "&rdquo;"}
+      {!isTyping && displayedText && <>&rdquo;</>}
     </p>
   );
 }
@@ -255,16 +215,9 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
       <div className="absolute top-0 left-0 w-1/3 h-full bg-gradient-to-r from-primary-600/5 to-transparent" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-gold-500/5 rounded-full blur-3xl" />
 
-      {/* 3D Decorative Quote - replacing static quote */}
-      <div className="absolute top-10 right-10 w-40 h-40 pointer-events-none hidden lg:block opacity-50">
-        <Suspense fallback={null}>
-          <QuoteScene />
-        </Suspense>
-      </div>
-
-      {/* Large Decorative Quote (fallback) */}
-      <div className="absolute top-20 right-20 pointer-events-none hidden xl:block lg:hidden">
-        <Quote className="w-64 h-64 text-neutral-200" fill="currentColor" />
+      {/* Large Decorative Quote */}
+      <div className="absolute top-20 right-20 pointer-events-none hidden lg:block">
+        <Quote className="w-48 h-48 text-gold-500/10" fill="currentColor" />
       </div>
 
       <div className="container mx-auto px-6 lg:px-12 relative">
@@ -278,7 +231,7 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
             className="flex items-center justify-center gap-4 mb-6"
           >
             <span className="w-12 h-[2px] bg-gold-500" />
-            <span className="text-gold-600 text-sm font-semibold tracking-[0.2em] uppercase">
+            <span className="text-gold-500 text-sm font-semibold tracking-[0.25em] uppercase">
               Testimonials
             </span>
             <span className="w-12 h-[2px] bg-gold-500" />
@@ -317,7 +270,7 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
                 >
                   <div className="relative aspect-[4/5] overflow-hidden shadow-2xl">
                     <img
-                      src={testimonials[currentIndex].image}
+                      src={testimonials[currentIndex].projectImage || testimonials[currentIndex].clientImage}
                       alt={testimonials[currentIndex].projectType}
                       className="w-full h-full object-cover"
                     />
@@ -363,10 +316,18 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
 
                   {/* Client Info */}
                   <div className="flex items-center gap-4 mb-8">
-                    <div className="w-16 h-16 bg-primary-600 flex items-center justify-center">
-                      <span className="text-white font-cinzel font-bold text-xl">
-                        {testimonials[currentIndex].clientName.charAt(0)}
-                      </span>
+                    <div className="w-16 h-16 rounded-full overflow-hidden bg-primary-600 flex items-center justify-center">
+                      {testimonials[currentIndex].clientImage ? (
+                        <img
+                          src={testimonials[currentIndex].clientImage}
+                          alt={testimonials[currentIndex].clientName}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-white font-cinzel font-bold text-xl">
+                          {testimonials[currentIndex].clientName.charAt(0)}
+                        </span>
+                      )}
                     </div>
                     <div>
                       <h4 className="text-lg font-cinzel font-semibold text-neutral-900 mb-0.5">

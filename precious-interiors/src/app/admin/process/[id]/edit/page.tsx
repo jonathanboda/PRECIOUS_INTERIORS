@@ -4,8 +4,9 @@ import { ArrowLeft } from 'lucide-react'
 import { getProcessStepById } from '@/lib/queries/process'
 import { ProcessStepForm } from '@/components/admin/forms/process-form'
 
-export default async function EditProcessStepPage({ params }: { params: { id: string } }) {
-  const step = await getProcessStepById(params.id)
+export default async function EditProcessStepPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const step = await getProcessStepById(id)
   if (!step) notFound()
 
   return (

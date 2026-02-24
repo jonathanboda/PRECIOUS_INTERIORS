@@ -1,36 +1,73 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Instagram, Linkedin, ArrowRight, ArrowUp } from "lucide-react";
+import { Instagram, Linkedin, Youtube, ArrowRight, ArrowUp } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 
-const footerLinks = {
+interface FooterProps {
+  content?: {
+    companyDescription?: string;
+    copyrightText?: string;
+    socialLinks?: { platform: string; url: string }[];
+    quickLinks?: { label: string; href: string }[];
+    newsletterTitle?: string;
+    newsletterDescription?: string;
+  } | null;
+  contactInfo?: {
+    phone?: string;
+    email?: string;
+  } | null;
+}
+
+const defaultFooterLinks = {
   company: [
-    { name: "Services", href: "/services" },
-    { name: "Projects", href: "/projects" },
-    { name: "Contact", href: "/contact" },
+    { label: "Services", href: "/services" },
+    { label: "Projects", href: "/projects" },
+    { label: "Contact", href: "/contact" },
   ],
   services: [
-    { name: "Interior Design", href: "/services" },
-    { name: "Space Planning", href: "/services" },
-    { name: "Custom Furniture", href: "/services" },
-    { name: "Art Curation", href: "/services" },
+    { label: "Interior Design", href: "/services" },
+    { label: "Space Planning", href: "/services" },
+    { label: "Custom Furniture", href: "/services" },
+    { label: "Art Curation", href: "/services" },
   ],
 };
 
-const socialLinks = [
-  { name: "Instagram", icon: Instagram, href: "https://instagram.com" },
-  { name: "LinkedIn", icon: Linkedin, href: "https://linkedin.com" },
-  { name: "Pinterest", icon: () => (
-    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/>
-    </svg>
-  ), href: "https://pinterest.com" },
+const defaultSocialLinks = [
+  { platform: "Instagram", url: "https://www.instagram.com/the_precious_interiors?igsh=bDR2cXl6cmpsNThx&utm_source=qr" },
+  { platform: "LinkedIn", url: "https://www.linkedin.com/company/the-precious-interior-designing-s/" },
+  { platform: "YouTube", url: "https://youtube.com/@preciousinteriors-h7u?si=3kicvz-DIPFtH8VU" },
 ];
 
-export function Footer() {
+const defaultContent = {
+  companyDescription: "Transforming spaces into extraordinary experiences since 2016. Where refined elegance meets purposeful design.",
+  newsletterTitle: "Newsletter",
+  newsletterDescription: "Subscribe for design inspiration and exclusive updates.",
+};
+
+const socialIcons: Record<string, typeof Instagram> = {
+  Instagram,
+  LinkedIn: Linkedin,
+  YouTube: Youtube,
+};
+
+export function Footer({ content, contactInfo }: FooterProps) {
   const currentYear = new Date().getFullYear();
+
+  // Use props or defaults
+  const companyDescription = content?.companyDescription || defaultContent.companyDescription;
+  const quickLinks = content?.quickLinks && content.quickLinks.length > 0
+    ? content.quickLinks
+    : defaultFooterLinks.company;
+  const servicesLinks = defaultFooterLinks.services; // Always use default services
+  const socialLinksData = content?.socialLinks && content.socialLinks.length > 0
+    ? content.socialLinks
+    : defaultSocialLinks;
+  const newsletterTitle = content?.newsletterTitle || defaultContent.newsletterTitle;
+  const newsletterDescription = content?.newsletterDescription || defaultContent.newsletterDescription;
+  const phone = contactInfo?.phone || "+91 90100 91191";
+  const email = contactInfo?.email || "manikanta@thepreciousinteriors.com";
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -59,8 +96,7 @@ export function Footer() {
               transition={{ delay: 0.1 }}
               className="text-neutral-400 leading-relaxed mb-8 max-w-sm"
             >
-              Transforming spaces into extraordinary experiences since 2016.
-              Where refined elegance meets purposeful design.
+              {companyDescription}
             </motion.p>
 
             {/* Social Links */}
@@ -71,16 +107,16 @@ export function Footer() {
               transition={{ delay: 0.2 }}
               className="flex items-center gap-3"
             >
-              {socialLinks.map((social) => {
-                const Icon = social.icon;
+              {socialLinksData.map((social) => {
+                const Icon = socialIcons[social.platform] || Instagram;
                 return (
                   <a
-                    key={social.name}
-                    href={social.href}
+                    key={social.platform}
+                    href={social.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-12 h-12 flex items-center justify-center bg-neutral-800 text-neutral-400 hover:bg-gold-500 hover:text-neutral-900 transition-all duration-300"
-                    aria-label={social.name}
+                    aria-label={social.platform}
                   >
                     <Icon />
                   </a>
@@ -100,9 +136,9 @@ export function Footer() {
               Company
             </motion.h4>
             <ul className="space-y-4">
-              {footerLinks.company.map((link, index) => (
+              {quickLinks.map((link, index) => (
                 <motion.li
-                  key={link.name}
+                  key={link.label}
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -112,7 +148,7 @@ export function Footer() {
                     href={link.href}
                     className="text-neutral-400 hover:text-white transition-colors duration-200 text-sm"
                   >
-                    {link.name}
+                    {link.label}
                   </Link>
                 </motion.li>
               ))}
@@ -130,9 +166,9 @@ export function Footer() {
               Services
             </motion.h4>
             <ul className="space-y-4">
-              {footerLinks.services.map((link, index) => (
+              {servicesLinks.map((link, index) => (
                 <motion.li
-                  key={link.name}
+                  key={link.label}
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -142,7 +178,7 @@ export function Footer() {
                     href={link.href}
                     className="text-neutral-400 hover:text-white transition-colors duration-200 text-sm"
                   >
-                    {link.name}
+                    {link.label}
                   </Link>
                 </motion.li>
               ))}
@@ -157,7 +193,7 @@ export function Footer() {
               viewport={{ once: true }}
               className="text-sm font-semibold tracking-[0.15em] uppercase text-gold-500 mb-6"
             >
-              Newsletter
+              {newsletterTitle}
             </motion.h4>
 
             <motion.p
@@ -167,7 +203,7 @@ export function Footer() {
               transition={{ delay: 0.1 }}
               className="text-neutral-400 text-sm mb-4"
             >
-              Subscribe for design inspiration and exclusive updates.
+              {newsletterDescription}
             </motion.p>
 
             <motion.form
@@ -193,16 +229,16 @@ export function Footer() {
             {/* Contact Info */}
             <div className="mt-8 space-y-2">
               <a
-                href="mailto:manikanta@thepreciousinteriors.com"
+                href={`mailto:${email}`}
                 className="block text-neutral-400 hover:text-gold-400 transition-colors text-sm"
               >
-                manikanta@thepreciousinteriors.com
+                {email}
               </a>
               <a
-                href="tel:+919010091191"
+                href={`tel:${phone.replace(/\s/g, '')}`}
                 className="block text-neutral-400 hover:text-gold-400 transition-colors text-sm"
               >
-                +91 90100 91191
+                {phone}
               </a>
             </div>
           </div>

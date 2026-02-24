@@ -1,14 +1,19 @@
 'use client'
 
-import { useTransition } from 'react'
+import { memo, useTransition } from 'react'
 import { deleteTestimonial } from '@/lib/actions/testimonials'
 
-export function DeleteTestimonialButton({ id }: { id: string }) {
+export const DeleteTestimonialButton = memo(function DeleteTestimonialButton({ id }: { id: string }) {
   const [isPending, startTransition] = useTransition()
 
   const handleDelete = () => {
     if (!confirm('Delete this testimonial?')) return
-    startTransition(() => deleteTestimonial(id))
+    startTransition(async () => {
+      const result = await deleteTestimonial(id)
+      if (result?.error) {
+        alert('Failed to delete testimonial: ' + result.error)
+      }
+    })
   }
 
   return (
@@ -16,4 +21,4 @@ export function DeleteTestimonialButton({ id }: { id: string }) {
       {isPending ? 'Deleting...' : 'Delete'}
     </button>
   )
-}
+})

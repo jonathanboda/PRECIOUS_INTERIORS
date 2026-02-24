@@ -28,18 +28,25 @@ export function ScrollProgress({
   });
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = Math.round((scrollTop / docHeight) * 100);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollTop = window.scrollY;
+          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          const scrollPercent = Math.round((scrollTop / docHeight) * 100);
 
-      setPercentage(scrollPercent);
+          setPercentage(scrollPercent);
 
-      if (hideBeforeHero) {
-        const heroHeight = window.innerHeight;
-        setIsVisible(scrollTop > heroHeight * 0.5);
-      } else {
-        setIsVisible(scrollTop > 100);
+          if (hideBeforeHero) {
+            const heroHeight = window.innerHeight;
+            setIsVisible(scrollTop > heroHeight * 0.5);
+          } else {
+            setIsVisible(scrollTop > 100);
+          }
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 

@@ -7,6 +7,7 @@ interface Testimonial {
   client_title: string;
   project_type: string;
   image_url: string;
+  project_image_url: string | null;
   rating: number;
 }
 
@@ -22,7 +23,8 @@ export function Testimonials({ testimonials: testimonialsData }: TestimonialsPro
     clientName: t.client_name,
     clientTitle: t.client_title,
     projectType: t.project_type,
-    image: t.image_url,
+    clientImage: t.image_url,
+    projectImage: t.project_image_url,
     rating: t.rating,
   }));
 

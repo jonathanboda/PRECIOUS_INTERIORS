@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { getProjectById } from '@/lib/queries/projects'
 import { ProjectForm } from '@/components/admin/forms/project-form'
 import { ArrowLeft } from 'lucide-react'
 
@@ -10,12 +10,7 @@ export default async function EditProjectPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const supabase = await createClient()
-  const { data: project } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('id', id)
-    .single()
+  const project = await getProjectById(id)
 
   if (!project) {
     notFound()

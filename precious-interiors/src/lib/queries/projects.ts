@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
+import type { Database } from '@/lib/types/database'
 
-export async function getProjects() {
+type Project = Database['public']['Tables']['projects']['Row']
+
+export async function getProjects(): Promise<Project[]> {
   try {
     const supabase = await createClient()
     const { data, error } = await supabase
@@ -19,7 +22,7 @@ export async function getProjects() {
   }
 }
 
-export async function getFeaturedProjects(count = 6) {
+export async function getFeaturedProjects(count = 6): Promise<Project[]> {
   try {
     const supabase = await createClient()
     const { data, error } = await supabase
@@ -40,7 +43,7 @@ export async function getFeaturedProjects(count = 6) {
   }
 }
 
-export async function getProjectBySlug(slug: string) {
+export async function getProjectBySlug(slug: string): Promise<Project | null> {
   try {
     const supabase = await createClient()
     const { data, error } = await supabase
@@ -60,7 +63,27 @@ export async function getProjectBySlug(slug: string) {
   }
 }
 
-export async function getRelatedProjects(currentSlug: string, roomType: string, style: string, count = 3) {
+export async function getProjectById(id: string): Promise<Project | null> {
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error fetching project:', error.message)
+      return null
+    }
+    return data
+  } catch (error) {
+    console.error('Error fetching project:', error)
+    return null
+  }
+}
+
+export async function getRelatedProjects(currentSlug: string, roomType: string, style: string, count = 3): Promise<Project[]> {
   try {
     const supabase = await createClient()
     const { data, error } = await supabase
@@ -81,7 +104,7 @@ export async function getRelatedProjects(currentSlug: string, roomType: string, 
   }
 }
 
-export async function getProjectsByFilter(roomType?: string, style?: string) {
+export async function getProjectsByFilter(roomType?: string, style?: string): Promise<Project[]> {
   try {
     const supabase = await createClient()
     let query = supabase.from('projects').select('*')

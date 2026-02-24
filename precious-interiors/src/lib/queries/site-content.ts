@@ -51,12 +51,12 @@ export async function getContactInfo() {
 
 export async function getFooterContent() {
   return getSiteContent<{
-    tagline: string
-    companyLinks: { name: string; href: string }[]
-    servicesLinks: { name: string; href: string }[]
-    socialLinks: { platform: string; href: string }[]
-    newsletter: { title: string; description: string; placeholder: string }
-    legalLinks: { name: string; href: string }[]
+    companyDescription: string
+    copyrightText: string
+    socialLinks: { platform: string; url: string }[]
+    quickLinks: { label: string; href: string }[]
+    newsletterTitle: string
+    newsletterDescription: string
   }>('footer')
 }
 
@@ -81,4 +81,10 @@ export async function getServiceHighlights() {
   return getSiteContent<{
     highlights: string[]
   }>('service_highlights')
+}
+
+export async function getStatsContent() {
+  return getSiteContent<{
+    stats: { value: string; suffix: string; label: string; description?: string }[]
+  }>('stats')
 }

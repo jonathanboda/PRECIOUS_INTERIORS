@@ -25,7 +25,7 @@ interface Project {
   roomType: string;
   style: string;
   image: string;
-  year: number;
+  year: string;
   duration: string;
   sqft: string;
   description: string;
@@ -82,10 +82,10 @@ export function ProjectDetailClient({ project, relatedProjects }: ProjectDetailC
         >
           <Link
             href="/projects"
-            className="group inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm text-white text-sm font-medium hover:bg-white/20 transition-colors"
+            className="group inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm text-white text-sm font-medium hover:bg-white/20 transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            <span>All Projects</span>
+            <span>Back to Projects</span>
           </Link>
         </motion.div>
 
